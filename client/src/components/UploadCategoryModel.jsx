@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
 import uploadImage from "../utils/uploadImage";
@@ -9,8 +9,7 @@ import AxiosToastError from "../utils/AxiosToastError";
 import deleteImage from "../utils/deleteImage";
 import toast from "react-hot-toast";
 import Axios from "../utils/Axios";
-import summaryApi from "../common/summaryApi";;
-import { useSelector } from "react-redux";
+import summaryApi from "../common/summaryApi";
 
 function UploadCategoryModel({ close, fetchCategory }) {
     const [data, setData] = useState({
@@ -21,12 +20,6 @@ function UploadCategoryModel({ close, fetchCategory }) {
     const [hover, setHover] = useState(false);
     const fileInputRef = useRef(null);
 
-    const allCategory = useSelector(state => state.product.allCategory)
-    // console.log("allCategory from redux: ", allCategory);
-    
-    useEffect(() => {
-        setData(allCategory)
-    }, [allCategory])
     const handleChange = (e) => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
@@ -38,12 +31,14 @@ function UploadCategoryModel({ close, fetchCategory }) {
         setLoading(true); // Start loading
         try {
             const response = await uploadImage(file, "category");
-            setData((prev) => ({
-                ...prev,
-                image: response.data.data.url,
-            }));
+            if (response?.data?.data?.url) {
+                setData((prev) => ({
+                    ...prev,
+                    image: response.data.data.url,
+                }));
+            }
         } catch (error) {
-            console.error("Image upload failed:", error);
+            console.error("Image upload failed:", error?.response?.data?.message || error?.response?.data || error?.message || error);
         } finally {
             setLoading(false); // Stop loading
         }

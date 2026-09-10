@@ -17,18 +17,53 @@ import orderRouters from "./routes/order.route.js"
 dotenv.config()
 
 const app = express()
+
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:3000",
+    "https://nishant.one",
+    "https://www.nishant.one"
+].filter(Boolean).flatMap(url => [url.replace(/\/$/, ""), url]);
+
 app.use(cors({
-    origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        const cleanOrigin = origin.replace(/\/$/, "");
+
+        const isAllowed =
+            allowedOrigins.includes(cleanOrigin) ||
+            process.env.CLIENT_URL?.split(",").map(u => u.trim().replace(/\/$/, "")).includes(cleanOrigin) ||
+            /\.vercel\.app$/.test(cleanOrigin) ||
+            /\.netlify\.app$/.test(cleanOrigin) ||
+            /nishant\.one$/.test(cleanOrigin) ||
+            process.env.NODE_ENV !== "production";
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            callback(null, true);
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+    credentials: true,
+    optionsSuccessStatus: 200
 }));
 
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(morgan("dev")); // Logs requests in a readable format
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
+// Ensure DB is connected for serverless invocations
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
 
 const PORT = process.env.PORT || 8080;
 
@@ -49,8 +84,12 @@ app.use("/api/address", addressRoutes)
 app.use("/api/order", orderRouters)
 
 connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server is running on ${PORT}`);
-    })
+    if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+        app.listen(PORT, () => {
+            console.log(`Server is running on ${PORT}`);
+        })
+    }
 })
+
+export default app;
 

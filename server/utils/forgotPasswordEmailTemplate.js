@@ -28,8 +28,8 @@ const forgotPasswordEmailTemplate = ({ name, otp }) => {
             
             <!-- Footer Section -->
             <div style="border-top: 1px solid #2e2d2d; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 12px; color: #242121;">
-                <p>Best regards, <br><strong>BlinkIt_Clone Team</strong></p>
-                <p style="font-size: 10px; color: #2e2d2d;">© 2025 BlinkIt_Clone. All rights reserved.</p>
+                <p>Best regards, <br><strong>Jp Store Team</strong></p>
+                <p style="font-size: 10px; color: #2e2d2d;">© ${new Date().getFullYear()} Jp Store. All rights reserved.</p>
             </div>
         </div>
     `;

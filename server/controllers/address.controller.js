@@ -85,19 +85,11 @@ export const getAllAddressByIdController = async (req, res) => {
         // Fetch all addresses belonging to the user
         const addresses = await AddressModel.find({ userId });
 
-        if (!addresses || addresses.length === 0) {
-            return res.status(404).json({
-                message: "No addresses found for this user.",
-                error: true,
-                success: false
-            });
-        }
-
         return res.status(200).json({
-            message: "Addresses retrieved successfully!",
+            message: addresses && addresses.length > 0 ? "Addresses retrieved successfully!" : "No addresses found for this user.",
             error: false,
             success: true,
-            data: addresses
+            data: addresses || []
         });
 
     } catch (error) {

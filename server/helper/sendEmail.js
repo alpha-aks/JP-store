@@ -11,21 +11,23 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ sendTo, subject, html }) => {
     try {
+        console.log(`\n📧 [EMAIL DISPATCH] To: ${sendTo} | Subject: ${subject}`);
         const { data, error } = await resend.emails.send({
-            from: 'BlinkIt Clone <no-reply@yashh1524.com>',  // ✅ Fixed format
+            from: 'Jp Store <no-reply@nishant.one>',
             to: sendTo,
             subject: subject,
             html: html,
         });
 
         if (error) {
-            console.error({ error });
+            console.error("❌ Resend error:", error);
             return null;
         }
 
+        console.log("✅ Email sent successfully via Resend. ID:", data?.id);
         return data;
     } catch (error) {
-        console.error("Error sending email:", error);
+        console.error("❌ Error sending email:", error);
         return null;
     }
 };

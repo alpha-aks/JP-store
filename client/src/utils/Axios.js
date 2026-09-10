@@ -24,20 +24,20 @@ Axios.interceptors.request.use(
 )
 
 //extend the life span of accesstoken with help of refreshToken
-Axios.interceptors.request.use(
-    async (response) => {
+Axios.interceptors.response.use(
+    (response) => {
         return response
     },
     async (error) => {
         let originalRequest = error.config
 
-        if(error.response.status === 401 && !originalRequest.retry) {
+        if(error.response?.status === 401 && originalRequest && !originalRequest.retry) {
             originalRequest.retry = true
 
             const refreshToken = localStorage.getItem("refreshToken")
 
             if(refreshToken) {
-                const newAccessToken = await refreshAccessToken()
+                const newAccessToken = await refreshAccessToken(refreshToken)
 
                 if(newAccessToken) {
                     originalRequest.headers.authorization = `Bearer ${newAccessToken}`

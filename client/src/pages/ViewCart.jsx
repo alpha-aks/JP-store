@@ -5,7 +5,6 @@ import clock from "../assets/clock.png"
 import { useSelector } from "react-redux";
 import { IoMdListBox } from "react-icons/io";
 import { GiScooter } from "react-icons/gi";
-import { HiShoppingBag } from "react-icons/hi";
 import waves from "../assets/waves.svg"
 import feeding_india_icon_v6 from "../assets/feeding_india_icon_v6.webp"
 import empty_cart from "../assets/empty_cart.webp"
@@ -42,7 +41,7 @@ function ViewCart() {
     const [custonTipInput, setCustonTipInput] = useState(0)
     const [totalItems, setTotalItems] = useState(0)
 
-    const otherCharge = 4 + (isDonationChecked ? 1 : 0) + tipAmount + deliveryCharge;
+    const otherCharge = (isDonationChecked ? 1 : 0) + tipAmount + deliveryCharge;
 
     const grandTotal = totalPriceWithDiscount + otherCharge
 
@@ -205,15 +204,7 @@ function ViewCart() {
                                                 ) : (
                                                     <span>&#8377;{deliveryCharge}</span>
                                                 )}
-
                                             </div>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center gap-1">
-                                                <HiShoppingBag />
-                                                <span className="text-xs">Handling charge</span>
-                                            </div>
-                                            <span className="text-xs">&#8377;4</span>
                                         </div>
                                     </div>
                                     {/* Grand total */}

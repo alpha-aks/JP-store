@@ -92,14 +92,14 @@ function OrderDetails() {
     }
 
     const calcOtherCharge = () => {
-    if (!orderData?.totalAmt) return; // Ensure orderData.totalAmt is defined
+        if (!orderData?.totalAmt) return; // Ensure orderData.totalAmt is defined
 
-    let handlingCharge = 4;
-    let deliveryCharge = totalAmountWithDiscount < 500 ? 30 : 0;
+        let deliveryCharge = totalAmountWithDiscount < 500 ? 30 : 0;
 
-    const chagres = orderData.totalAmt.toFixed(2) - deliveryCharge.toFixed(2) - handlingCharge.toFixed(2) - totalAmountWithDiscount.toFixed(2)
+        const chagres = orderData.totalAmt.toFixed(2) - deliveryCharge.toFixed(2) - totalAmountWithDiscount.toFixed(2);
 
-    setOtherCharge(chagres)
+        setOtherCharge(chagres > 0 ? chagres : 0);
+    };
 
     // // Calculate otherCharge as the remaining amount
     // const calculatedOtherCharge = orderData.totalAmt - (totalAmountWithDiscount + handlingCharge + deliveryCharge);
@@ -110,7 +110,6 @@ function OrderDetails() {
     // } else {
     //     setOtherCharge(calculatedOtherCharge > 0 ? calculatedOtherCharge : 0);
     // }
-};
 
 
     // Set deliveryTime when orderData is updated
@@ -212,10 +211,6 @@ function OrderDetails() {
                                     <div className="flex justify-between font-semibold">
                                         <p className="text-xs text-[#666666]">Item total</p>
                                         <p className="text-xs text-[#666666]">&#8377;{totalAmountWithDiscount.toFixed(2)}</p>
-                                    </div>
-                                    <div className="flex justify-between font-semibold">
-                                        <p className="text-xs text-[#666666]">Handling charge</p>
-                                        <p className="text-xs text-[#666666]">+&#8377;4</p>
                                     </div>
                                     <div className="flex justify-between font-semibold">
                                         <p className="text-xs text-[#666666]">Delivery charges</p>

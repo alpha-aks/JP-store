@@ -75,7 +75,10 @@ function Footer() {
                     </div>
                 </div>
 
-
+                {/* Copyright Section */}
+                <div className="border-t border-gray-200 mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2">
+                    <p>© {new Date().getFullYear()} Jp Store. All rights reserved.</p>
+                </div>
 
             </div>
         </footer>

@@ -14,7 +14,7 @@ const deleteImage = async (image, path) => {
         return response
     } catch (error) {
         AxiosToastError(error)
-        return error
+        throw error
     }
 }
 

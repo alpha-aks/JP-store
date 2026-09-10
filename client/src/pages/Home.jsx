@@ -1,29 +1,46 @@
 /* eslint-disable no-unused-vars */
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { validURLConvertor } from "../utils/validURLConvertor";
 import ProductViewByCategory from "../components/ProductViewByCategory";
+import Axios from "../utils/Axios";
+import summaryApi from "../common/summaryApi";
+import { setAllCategory, setAllSubCategory } from "../store/productSlice";
 
 function Home() {
-
+    const dispatch = useDispatch();
     const loadingCategory = useSelector(state => state.product.loadingCategory);
     const allCategory = useSelector(state => state.product.allCategory);
     const allSubCategory = useSelector(state => state.product.allSubCategory);
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const fetchCategoriesAndSub = async () => {
+            try {
+                const [catRes, subCatRes] = await Promise.all([
+                    Axios(summaryApi.getCategory),
+                    Axios(summaryApi.getSubCategory)
+                ]);
+                if (catRes.data.success) dispatch(setAllCategory(catRes.data.data));
+                if (subCatRes.data.success) dispatch(setAllSubCategory(subCatRes.data.data));
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchCategoriesAndSub();
+    }, [dispatch]);
+
     const handleRedirectToProductList = (categoryId, categoryName) => {
         const filteredSubCategories = allSubCategory?.filter(subCategory =>
             subCategory.category?.some(cat => cat._id === categoryId)
         );
-        // console.log("filteredSubCategories: ", filteredSubCategories);
-
-        // const url = `/${validURLConvertor(categoryName)}-${categoryId}/${validURLConvertor(filteredSubCategories[0].name)}-${filteredSubCategories[0]._id}`
-
-        // navigate(url);
-        let subCategoryId = filteredSubCategories[0]?._id;
-        navigate(`/products-list/${categoryId}/${subCategoryId}`, { state: { categoryId, subCategoryId } });
-
+        let subCategoryId = filteredSubCategories?.[0]?._id;
+        if (subCategoryId) {
+            navigate(`/products-list/${categoryId}/${subCategoryId}`, { state: { categoryId, subCategoryId } });
+        } else {
+            navigate(`/all-products-by-category/${categoryId}`, { state: { categoryId } });
+        }
     };
 
     return (
@@ -45,15 +62,18 @@ function Home() {
                     ) : (
                         allCategory.map((category, index) => (
                             <div
-                                key={index}
-                                className="flex flex-col items-center justify-center bg-white rounded-lg transition-transform transform hover:scale-110 relative"
+                                key={category._id || index}
+                                className="flex flex-col items-center justify-center bg-white rounded-lg transition-transform transform hover:scale-105 p-2 shadow-sm hover:shadow cursor-pointer"
                                 onClick={() => handleRedirectToProductList(category._id, category.name)}
                             >
                                 <img
                                     src={category.image}
-                                    alt={`Category ${index}`}
-                                    className="w-32 h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 object-contain"
+                                    alt={category.name || `Category ${index}`}
+                                    className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain"
                                 />
+                                <span className="text-xs sm:text-sm font-medium text-gray-800 text-center mt-1 truncate max-w-full">
+                                    {category.name}
+                                </span>
                             </div>
                         ))
                     )}

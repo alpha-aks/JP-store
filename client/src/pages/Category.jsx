@@ -9,7 +9,8 @@ import NoData from "../components/NoData"
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import UpdateCategoryModel from "../components/UpdateCategoryModel"
-// import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
+import { setAllCategory } from "../store/productSlice"
 
 function Category() {
 
@@ -20,18 +21,12 @@ function Category() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [deleteCategoryId, setDeleteCategoryId] = useState(null);
+    const dispatch = useDispatch();
 
     const handleOpenUpdateCategoryModel = (category) => {
         setSelectedCategory(category);
         setOpenUpdateCategoryModel(true);
     };
-
-    // const allCategory = useSelector(state => state.product.allCategory)
-    // // console.log("allCategory from redux: ", allCategory);
-
-    // useEffect(() => {
-    //     setCategoryData(allCategory);
-    // }, [allCategory]);
 
     const fetchCategory = async () => {
         try {
@@ -41,9 +36,8 @@ function Category() {
             })
             // console.log("response: ", response);
             if (response.data.success) {
-                // toast.success(response.data.message)
                 setCategoryData(response.data.data)
-                // console.log("categoryData: ", categoryData);
+                dispatch(setAllCategory(response.data.data))
             } else {
                 toast.error(response.data.message)
             }

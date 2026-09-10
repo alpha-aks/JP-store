@@ -8,14 +8,16 @@ import ViewImage from "../components/ViewImage";
 import deleteImage from "../utils/deleteImage";
 import AxiosToastError from "../utils/AxiosToastError";
 import { IoCloseSharp } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setAllCategory, setAllSubCategory } from "../store/productSlice";
 import AddField from "../components/AddField";
 import Switch from "react-switch";
 import Axios from "../utils/Axios";
-import summaryApi from "../common/summaryApi";;
+import summaryApi from "../common/summaryApi";
 import successAlert from "../utils/successAlert";
 
 function UploadProduct() {
+    const dispatch = useDispatch();
     const [data, setData] = useState({
         name: "",
         image: [],
@@ -39,6 +41,22 @@ function UploadProduct() {
 
     const allCategory = useSelector(state => state.product.allCategory)
     const allSubCategory = useSelector(state => state.product.allSubCategory)
+
+    useEffect(() => {
+        const fetchCategoriesAndSub = async () => {
+            try {
+                const [catRes, subCatRes] = await Promise.all([
+                    Axios(summaryApi.getCategory),
+                    Axios(summaryApi.getSubCategory)
+                ]);
+                if (catRes.data.success) dispatch(setAllCategory(catRes.data.data));
+                if (subCatRes.data.success) dispatch(setAllSubCategory(subCatRes.data.data));
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchCategoriesAndSub();
+    }, [dispatch]);
     // console.log("allSubCategory.length: ", allSubCategory.length);
     // console.log("allSubCategory: ", allSubCategory);
 
@@ -96,12 +114,14 @@ function UploadProduct() {
     
             for (const file of files) {
                 const response = await uploadImage(file, "product");
-                const imageURL = response.data.data.url;
-                uploadedImages.push(imageURL);
-                uploadedCount++;
-    
-                // Update progress after each upload
-                setCurrentlyUploadedImages(uploadedCount);
+                if (response?.data?.data?.url) {
+                    const imageURL = response.data.data.url;
+                    uploadedImages.push(imageURL);
+                    uploadedCount++;
+
+                    // Update progress after each upload
+                    setCurrentlyUploadedImages(uploadedCount);
+                }
             }
     
             // Update state once after all images are uploaded

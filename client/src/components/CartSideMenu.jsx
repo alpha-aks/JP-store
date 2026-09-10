@@ -33,7 +33,7 @@ function CartSideMenu({ setIsCartMenuOpen, setIsAddressMenuOpen, setIsCartButton
 
     const grandTotal = totalPriceWithDiscount + otherCharge
 
-    const {fetchCartItem} = userCart()
+    const { fetchCartItem } = userCart()
 
     useEffect(() => {
         fetchCartItem()
@@ -46,30 +46,30 @@ function CartSideMenu({ setIsCartMenuOpen, setIsAddressMenuOpen, setIsCartButton
         let itemsCount = 0;
         let priceCountWithDiscount = 0;
         let priceCountWithOutDiscount = 0;
-    
+
         itemsCount = cartItem.reduce((prev, curr) => prev + curr.quantity, 0);
-    
+
         priceCountWithDiscount = parseFloat(
             cartItem.reduce((prev, curr) =>
                 prev + curr.productId.price * (1 - curr.productId.discount / 100) * curr.quantity, 0
             ).toFixed(2)
         );
-    
+
         priceCountWithOutDiscount = parseFloat(
             cartItem.reduce((prev, curr) =>
                 prev + curr.productId.price * curr.quantity, 0
             ).toFixed(2)
         );
-    
+
         setTotalItems(itemsCount);
         setTotalPriceWithDiscount(priceCountWithDiscount);
         setTotalPriceWithOutDiscount(priceCountWithOutDiscount);
         setTotalSavings((priceCountWithOutDiscount - priceCountWithDiscount).toFixed(2));
-    
+
         // Use priceCountWithDiscount instead of totalPriceWithDiscount
         setDeliveryCharge(priceCountWithDiscount > 500 ? 0 : 30);
     }, [cartItem]);
-    
+
 
     return (
         <section className="fixed top-0 bottom-0 left-0 right-0 bg-neutral-800/70 z-40">
@@ -225,136 +225,9 @@ function CartSideMenu({ setIsCartMenuOpen, setIsAddressMenuOpen, setIsCartButton
                                     </div>
 
                                     {/* Feeding India donation */}
-                                    <div className="w-full bg-white mt-3 rounded-xl flex justify-between items-center p-4">
-                                        <div className="flex gap-2 items-center">
-                                            <img src={feeding_india_icon_v6} alt="" className="w-13 h-10" />
-                                            <div className="flex flex-col">
-                                                <span className="text-md font-bold">Feeding India donation</span>
-                                                <span className="text-xs">Working towards a malnutrition free India. Feeding India...read more</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-1 items-center">
-                                            <span className="text-xs font-semibold">&#8377;1</span>
-                                            <input
-                                                type="checkbox"
-                                                className="donation-checkbox"
-                                                checked={isDonationChecked}
-                                                onChange={() => setIsDonationChecked(!isDonationChecked)}
-                                            />
-                                        </div>
-                                    </div>
 
-                                    {/* Tip */}
-                                    <div className="w-full bg-white mt-3 rounded-xl p-2">
-                                        <div className="flex">
-                                            <div>
-                                                <p className="text-md font-bold">Tip your delivery partner</p>
-                                                <p className="text-xs text-gray-500 mt-2">
-                                                    Your kindness means a lot! 100% of your tip will go directly to your delivery partner.
-                                                </p>
-                                            </div>
-                                            {
-                                                tipAmount > 0 && (
-                                                    <div className="flex flex-col gap-0">
-                                                        <span className="text-[0.7rem]">&#8377;{tipAmount}</span>
-                                                        <button 
-                                                            className="text-xs text-green-700 cursor-pointer"
-                                                            onClick={() => setTipAmount(0)}
-                                                        >
-                                                            Clear
-                                                        </button>
-                                                    </div>
-                                                )
-                                            }
-                                        </div>
 
-                                        {/* Tip Options */}
-                                        <div className="flex gap-2 mt-3 px-3">
-                                            {
-                                                isCustomTipSelected ? (
-                                                    <div className="flex gap-2 items-center">
-                                                        <button 
-                                                            className="flex items-center gap-1 px-1 py-2 bg-[#E8F5E9] rounded-xl text-sm font-semibold cursor-pointer border-1 border-green-700"
-                                                            onClick={() => setIsCustomTipSelected(!isCustomTipSelected)}
-                                                        >
-                                                            👏 Custom
-                                                        </button>
-                                                        <div className="flex flex-col gap-1">
-                                                            <input 
-                                                                type="number" 
-                                                                className="border-b border-gray-400 focus:border-black focus:outline-none px-2 py-1"
-                                                                onChange={(e) => {
-                                                                    setClickAddTip(false)
-                                                                    setCustonTipInput(Number(e.target.value))
-                                                                }}
-                                                            />
-                                                            {
-                                                                custonTipInput < 10 && (
-                                                                    <p className="text-[0.6rem] text-red-500">Tip amount should be greater than &#8377;10</p>
-                                                                )
-                                                            }
-                                                        </div>
-                                                        {
-                                                            !clickAddTip && (
-                                                                <button 
-                                                                    className="text-green-700 cursor-pointer"
-                                                                    onClick={() => {
-                                                                        setTipAmount(custonTipInput)
-                                                                        setClickAddTip(true)
-                                                                        setIsCustomTipSelected(!isCustomTipSelected)
-                                                                    }}
-                                                                >
-                                                                    add
-                                                                </button>
-                                                            )
-                                                        }
-                                                        {
-                                                            clickAddTip && (
-                                                                <button 
-                                                                    className="text-gray-500"
-                                                                    onClick={() => setIsCustomTipSelected(!isCustomTipSelected)}
-                                                                >
-                                                                    close
-                                                                </button>
-                                                            )
-                                                        }
 
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <button 
-                                                            className={`flex items-center gap-1 px-2 py-3  rounded-xl text-sm font-semibold cursor-pointer ${tipAmount === 20? 'border-1 border-green-700 bg-[#E8F5E9]' : ' border-1 border-gray-300'}`}
-                                                            onClick={() => setTipAmount(20)}
-                                                        >
-                                                            😀 ₹20
-                                                        </button>
-                                                        <button 
-                                                            className={`flex items-center gap-1 px-2 py-3  rounded-xl text-sm font-semibold cursor-pointer ${tipAmount === 30? 'border-1 border-green-700 bg-[#E8F5E9]' : ' border-1 border-gray-300'}`}
-                                                            onClick={() => setTipAmount(30)}
-                                                        >
-                                                            🤩 ₹30
-                                                        </button>
-                                                        <button 
-                                                            className={`flex items-center gap-1 px-2 py-3  rounded-xl text-sm font-semibold cursor-pointer ${tipAmount === 50? 'border-1 border-green-700 bg-[#E8F5E9]' : ' border-1 border-gray-300'}`}
-                                                            onClick={() => setTipAmount(50)}
-                                                        >
-                                                            😍 ₹50
-                                                        </button>
-                                                        <button
-                                                            className={`flex items-center gap-1 px-2 py-3 rounded-xl text-sm font-semibold cursor-pointer ${
-                                                                tipAmount !== 50 && tipAmount !== 30 && tipAmount !== 20
-                                                                ? 'border-1 border-green-700 bg-[#E8F5E9]'
-                                                                : 'border-1 border-gray-300'
-                                                            }`}
-                                                            onClick={() => setIsCustomTipSelected(!isCustomTipSelected)}
-                                                        >
-                                                            👏 Custom
-                                                        </button>
-                                                    </>
-                                                )
-                                            }
-                                        </div>
-                                    </div>
 
                                     {/* Cancellation Policy */}
                                     <div className="w-full bg-white mt-5 rounded-xl">
@@ -370,8 +243,8 @@ function CartSideMenu({ setIsCartMenuOpen, setIsAddressMenuOpen, setIsCartButton
                                     </div>
 
                                     {/* Checkout Button */}
-                                    <CheckOutButton 
-                                        grandTotal={grandTotal} 
+                                    <CheckOutButton
+                                        grandTotal={grandTotal}
                                         setIsAddressMenuOpen={setIsAddressMenuOpen}
                                         setIsCartMenuOpen={setIsCartMenuOpen}
                                         totalItems={totalItems}

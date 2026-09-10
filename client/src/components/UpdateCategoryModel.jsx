@@ -33,10 +33,12 @@ function UpdateCategoryModel({ close, category, fetchCategory }) {
         setLoading(true); // Start loading
         try {
             const response = await uploadImage(file, "category");
-            setData((prev) => ({
-                ...prev,
-                image: response.data.data.url,
-            }));
+            if (response?.data?.data?.url) {
+                setData((prev) => ({
+                    ...prev,
+                    image: response.data.data.url,
+                }));
+            }
         } catch (error) {
             console.error("Image upload failed:", error);
         } finally {

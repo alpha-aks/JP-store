@@ -255,24 +255,7 @@ function ProductDetails() {
 
                                     </div>
                                 </div>
-                                <div className="flex pt-4 items-center gap-4">
-                                    <img src={Best_Prices_Offers} alt="" className="w-15 h-15" />
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs">Best Prices & Offers</span>
-                                        <span className="text-[0.8rem] text-[#666666] leading-none">
-                                            Best price destination with offers directly from the manufacturers.
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex pt-4 items-center gap-4">
-                                    <img src={Wide_Assortment} alt="" className="w-15 h-15" />
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs">Wide Assortment</span>
-                                        <span className="text-[0.8rem] text-[#666666] leading-none">
-                                            Choose from 5000+ products across food, personal care, household & other categories.
-                                        </span>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>

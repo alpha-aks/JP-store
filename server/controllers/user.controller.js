@@ -1,4 +1,4 @@
-import {hashPassword,  comparePasswords} from "../helper/passwordHashng.js";
+import { hashPassword, comparePasswords } from "../helper/passwordHashng.js";
 import sendEmail from "../helper/sendEmail.js";
 import UserModel from "../models/user.model.js";
 import generateAccessToken from "../utils/generateAccessToken.js";
@@ -31,8 +31,8 @@ export const registerUserController = async (req, res) => {
 
         if (existingUser) {
             return res.status(400).json({
-                message: existingUser.email === email 
-                    ? "Email is already registered!" 
+                message: existingUser.email === email
+                    ? "Email is already registered!"
                     : "Mobile number is already registered!",
                 error: true,
                 success: false
@@ -54,7 +54,7 @@ export const registerUserController = async (req, res) => {
 
         await sendEmail({
             sendTo: email,
-            subject: "Verification Email from BlinkIt-Clone",
+            subject: "Verification Email from Jp store",
             html: verificationEmailTemplate({
                 name: savedUser.name,
                 url: verifyEmailURL,
@@ -133,7 +133,7 @@ export const verifyUserController = async (req, res) => {
 //login user
 export const loginUserController = async (req, res) => {
     try {
-        const {email, password} = req.body
+        const { email, password } = req.body
 
         if (!email || !password) {
             return res.status(400).json({
@@ -143,9 +143,9 @@ export const loginUserController = async (req, res) => {
             });
         }
 
-        const user = await UserModel.findOne({email})
+        const user = await UserModel.findOne({ email })
 
-        if(!user) {
+        if (!user) {
             return res.status(400).json({
                 message: "User not registered with this email!",
                 error: true,
@@ -153,7 +153,7 @@ export const loginUserController = async (req, res) => {
             })
         }
 
-        if(user.status !== "Active") {
+        if (user.status !== "Active") {
             return res.satus(400).json({
                 message: `Your account is ${user.status}, Please contact to admin!`,
                 error: true,
@@ -169,7 +169,7 @@ export const loginUserController = async (req, res) => {
                 success: false,
             });
         }
-        
+
         const accessToken = await generateAccessToken(user._id)
         const refreshToken = await generateRefreshToken(user._id)
 
@@ -183,8 +183,8 @@ export const loginUserController = async (req, res) => {
             sameSite: "None"
         }
 
-        res.cookie('accessToken',accessToken,cookiesOption)
-        res.cookie('refreshToken',refreshToken,cookiesOption)
+        res.cookie('accessToken', accessToken, cookiesOption)
+        res.cookie('refreshToken', refreshToken, cookiesOption)
 
         return res.status(200).json({
             message: "Login successfully.",
@@ -209,20 +209,20 @@ export const loginUserController = async (req, res) => {
 export const logoutController = async (req, res) => {
     try {
 
-        
+
         const userId = req.userId //from middleware
         // console.log("userId: ", userId)
 
         const cookiesOption = {
-            httpOnly : true,
-            secure : true,
-            sameSite : "None"
+            httpOnly: true,
+            secure: true,
+            sameSite: "None"
         }
 
         res.clearCookie("accessToken", cookiesOption)
         res.clearCookie("refreshToken", cookiesOption)
 
-        const removeRefreshToken = await UserModel.findByIdAndUpdate(userId, 
+        const removeRefreshToken = await UserModel.findByIdAndUpdate(userId,
             {
                 refresh_token: ""
             })
@@ -236,7 +236,7 @@ export const logoutController = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message: error.message || error,
-            error:true,
+            error: true,
             success: false
         })
     }
@@ -254,7 +254,7 @@ export const uploadAvatar = async (req, res) => {
         const user = await UserModel.findById(userId);
         const oldAvatarUrl = user?.avatar;
 
-        if (oldAvatarUrl && oldAvatarUrl !== ""){
+        if (oldAvatarUrl && oldAvatarUrl !== "") {
             deleteImgCloudinary(oldAvatarUrl, "profile")
         }
 
@@ -267,7 +267,7 @@ export const uploadAvatar = async (req, res) => {
 
         return res.status(200).json({
             message: "Avatar uploaded successfully",
-            error:false,
+            error: false,
             success: true,
             data: {
                 _id: userId,
@@ -278,7 +278,7 @@ export const uploadAvatar = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message: error.message || error,
-            error:true,
+            error: true,
             success: false
         })
     }
@@ -287,9 +287,9 @@ export const uploadAvatar = async (req, res) => {
 //update user details
 export const updateUserDetailsController = async (req, res) => {
     try {
-        
+
         const userId = req.userId //from authMiddleware
-        const {name , email, mobile, password} = req.body
+        const { name, email, mobile, password } = req.body
 
         //check if mobile already exist with other account or not
         if (mobile) {
@@ -309,17 +309,17 @@ export const updateUserDetailsController = async (req, res) => {
 
         // Hash the password
         let hashedPassword
-        if(password) {
+        if (password) {
             hashedPassword = await hashPassword(password);
         }
 
         const updatedUser = await UserModel.findByIdAndUpdate(
             userId, {
-                ...(name && {name: name}),
-                ...(email && {email: email}),
-                ...(mobile && {mobile: mobile}),
-                ...(password && {password: hashedPassword})
-            },
+            ...(name && { name: name }),
+            ...(email && { email: email }),
+            ...(mobile && { mobile: mobile }),
+            ...(password && { password: hashedPassword })
+        },
             { new: true } // To return the updated user
         )
 
@@ -333,7 +333,7 @@ export const updateUserDetailsController = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message: error.message || error,
-            error:true,
+            error: true,
             success: false,
         })
     }
@@ -342,9 +342,9 @@ export const updateUserDetailsController = async (req, res) => {
 //forgot password for not login
 export const forgotPasswordController = async (req, res) => {
     try {
-        const {email} = req.body
+        const { email } = req.body
 
-        if(!email?.trim()) {
+        if (!email?.trim()) {
             return res.status(400).json({
                 message: "Please provide Email!",
                 error: true,
@@ -352,8 +352,8 @@ export const forgotPasswordController = async (req, res) => {
             })
         }
 
-        const user = await UserModel.findOne({email})
-        if(!user) {
+        const user = await UserModel.findOne({ email })
+        if (!user) {
             return res.status(400).json({
                 message: "Email does not exist!",
                 error: true,
@@ -371,9 +371,9 @@ export const forgotPasswordController = async (req, res) => {
 
         await sendEmail({
             sendTo: email,
-            subject: "Forgot Password from BlinkIt-Clone.",
+            subject: "Forgot Password from Jp Store.",
             html: forgotPasswordEmailTemplate({
-                name: user.name, 
+                name: user.name,
                 otp: otp
             })
         })
@@ -387,7 +387,7 @@ export const forgotPasswordController = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message: error.message || error,
-            error:true,
+            error: true,
             success: false
         })
     }
@@ -405,7 +405,7 @@ export const verifyForgotPasswordOTPController = async (req, res) => {
                 success: false
             });
         }
-        
+
         const user = await UserModel.findOne({ email });
 
         if (!user) {
@@ -493,14 +493,14 @@ export const resetPasswordController = async (req, res) => {
         }
 
         // console.log("updatedUser: ", updatedUser);
-        
+
         await sendEmail({
             sendTo: email,
-            subject: "Your Password Has Been Successfully Reset - BlinkItClone",
+            subject: "Your Password Has Been Successfully Reset - Jp Store",
             html: resetPasswordConfirmationTemplate({
                 name: updatedUser.name,
                 email: updatedUser.email,
-                supportEmail: "support@yashh1524.com"
+                supportEmail: "support@Nishant.one"
             })
         })
 
@@ -521,9 +521,9 @@ export const resetPasswordController = async (req, res) => {
 //refresh token controller
 export const refreshTokenController = async (req, res) => {
     try {
-        const refreshToken = req.cookies.refreshToken || req?.header?.authorization?.split(" ")[1]
+        const refreshToken = req.cookies.refreshToken || req?.headers?.authorization?.split(" ")[1]
 
-        if(!refreshToken) {
+        if (!refreshToken) {
             return res.status(400).json({
                 message: "Refresh Token not found!",
                 error: true,
@@ -533,8 +533,8 @@ export const refreshTokenController = async (req, res) => {
 
         // console.log("refreshToken: ", refreshToken);
         const verifyToken = await jwt.verify(refreshToken, process.env.SECRET_KEY_REFRESH_TOKEN)
-        
-        if(!verifyToken) {
+
+        if (!verifyToken) {
             return res.status(400).json({
                 message: "Token is expired!",
                 error: true,
@@ -546,7 +546,7 @@ export const refreshTokenController = async (req, res) => {
         const userId = verifyToken.id
 
         const newAccessToken = await generateAccessToken(userId)
-        
+
         const cookiesOption = {
             httpOnly: true,
             secure: true,
@@ -579,10 +579,10 @@ export const userDetailsController = async (req, res) => {
 
         const user = await UserModel.findById(userId).select("-password -refresh_token")
 
-        if(!user) {
+        if (!user) {
             return res.status(400).json({
                 message: "User does not exist!",
-                error: true,    
+                error: true,
                 success: false
             })
         }

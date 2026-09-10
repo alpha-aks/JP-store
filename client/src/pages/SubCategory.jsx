@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import UploadSubCategoryModel from "../components/UploadSubCategoryModel";
 import AxiosToastError from "../utils/AxiosToastError";
 import Axios from "../utils/Axios";
-import summaryApi from "../common/summaryApi";;
+import summaryApi from "../common/summaryApi";
 import toast from "react-hot-toast";
 import DisplayTable from "./DisplayTable";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -13,8 +13,11 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import GridLoader from "react-spinners/GridLoader";
 import { IoSearchSharp } from "react-icons/io5";
+import { useDispatch } from "react-redux";
+import { setAllSubCategory, setAllCategory } from "../store/productSlice";
 
 function SubCategory() {
+    const dispatch = useDispatch();
     const [openUploadSubCategoryModel, setOpenUploadSubCategoryModel] = useState(false);
     const [OpenUpdateSubCategoryModel, setOpenUpdateSubCategoryModel] = useState(false);
     const [data, setData] = useState([]);
@@ -120,6 +123,7 @@ function SubCategory() {
             const response = await Axios(summaryApi.getSubCategory);
             if (response.data.success) {
                 setData(response.data.data);
+                dispatch(setAllSubCategory(response.data.data));
             }
         } catch (error) {
             AxiosToastError(error);
@@ -128,8 +132,20 @@ function SubCategory() {
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            const response = await Axios(summaryApi.getCategory);
+            if (response.data.success) {
+                dispatch(setAllCategory(response.data.data));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         fetchSubCategories();
+        fetchCategories();
     }, []);
 
     const filteredData = data.filter((subCategory) =>

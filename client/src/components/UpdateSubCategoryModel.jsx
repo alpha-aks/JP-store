@@ -1,19 +1,20 @@
 /* eslint-disable react/prop-types */
-import { useRef } from "react";
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import uploadImage from "../utils/uploadImage";
 import deleteImage from "../utils/deleteImage";
 import AxiosToastError from "../utils/AxiosToastError";
 import toast from "react-hot-toast";
 import Axios from "../utils/Axios";
-import summaryApi from "../common/summaryApi";;
+import summaryApi from "../common/summaryApi";
 import { IoCloseSharp } from "react-icons/io5";
 import BeatLoader from "react-spinners/BeatLoader";
 import { FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setAllCategory } from "../store/productSlice";
 
 function UpdateSubCategoryModel({ close, subCategory, fetchSubCategories}) {
+    const dispatch = useDispatch();
 
     const [data, setData] = useState({
         subCategoryId: subCategory.subCategory._id || "",
@@ -28,7 +29,21 @@ function UpdateSubCategoryModel({ close, subCategory, fetchSubCategories}) {
     const [hover, setHover] = useState(false);
     const fileInputRef = useRef(null);
 
-    const allCategory = useSelector(state => state.product.allCategory)
+    const allCategory = useSelector(state => state.product.allCategory);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await Axios(summaryApi.getCategory);
+                if (response.data.success) {
+                    dispatch(setAllCategory(response.data.data));
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchCategories();
+    }, [dispatch]);
 
     const handleChange = (e) => {
         setData({ 
@@ -44,10 +59,12 @@ function UpdateSubCategoryModel({ close, subCategory, fetchSubCategories}) {
         setLoading(true); // Start loading
         try {
             const response = await uploadImage(file, "subCategory");
-            setData((prev) => ({
-                ...prev,
-                image: response.data.data.url,
-            }));
+            if (response?.data?.data?.url) {
+                setData((prev) => ({
+                    ...prev,
+                    image: response.data.data.url,
+                }));
+            }
         } catch (error) {
             console.error("Image upload failed:", error);
         } finally {

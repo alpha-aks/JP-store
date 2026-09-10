@@ -25,6 +25,7 @@ export const uploadImageController = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("uploadImageController error:", error);
         return res.status(500).json({
             message: error.message || error,
             error: true,
