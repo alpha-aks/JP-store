@@ -50,7 +50,7 @@ function CheckOutButton({grandTotal, totalItems, setIsAddressMenuOpen, setIsCart
                                     </div>
                                 </div>
                                 <button
-                                    className="text-sm text-[#0C831F] font-semibold"
+                                    className="text-sm text-[#f37023] font-semibold"
                                     onClick={() => {
                                         setIsAddressMenuOpen(true)
                                     }}
@@ -61,7 +61,7 @@ function CheckOutButton({grandTotal, totalItems, setIsAddressMenuOpen, setIsCart
                         )
                     }
                 </div>
-                    <div className="flex justify-between text-white bg-[#0C831F] px-2 py-3 rounded-xl">
+                    <div className="flex justify-between text-white bg-[#f37023] hover:bg-[#e05e13] transition-colors duration-200 px-2 py-3 rounded-xl">
                         <div className="flex flex-col justify-start">
                             <span className="text-sm font-bold">&#8377;{grandTotal}</span>
                             <span className="text-xs">TOTAL</span>

@@ -87,7 +87,7 @@ function SearchPage() {
     if (!searchQuery) return null; // Hide everything if search is empty
 
     return (
-        <section className="lg:px-35 w-full mx-auto lg:mt-3 mt-10 h-full">
+        <section className="px-4 lg:px-6 w-full mx-auto mt-3 h-full">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-3">
                 {data.map((product) => (
                     <div

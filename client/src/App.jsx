@@ -20,24 +20,43 @@ import { setAddresses } from "./store/addressSlice";
 import EditAddress from "./components/EditAddress";
 import AddNewAddressManually from "./components/AddNewAddressManually";
 import EditAddressManually from "./components/EditAddressManually";
+import VideoPreloader from "./components/VideoPreloader";
 
 function App() {
+
+  const location = useLocation();
+
+  // Play video intro only on the home page and only once per session
+  const hasPlayedIntro = typeof window !== "undefined" && sessionStorage.getItem("jp_intro_played");
+  const isHomePage = location.pathname === "/";
+  const shouldPlayIntro = isHomePage && !hasPlayedIntro;
+
+  const [preloaderActive, setPreloaderActive] = useState(shouldPlayIntro);
+
+  const handlePreloaderComplete = () => {
+    try {
+      sessionStorage.setItem("jp_intro_played", "true");
+    } catch (err) {
+      console.warn("sessionStorage not available:", err);
+    }
+    setPreloaderActive(false);
+  };
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isCartMenuOpen, setIsCartMenuOpen] = useState(false);
   const [isAddressMenuOpen, setIsAddressMenuOpen] = useState(false);
   const [openAddNewAddressMenu, setOpenAddNewAddressMenu] = useState(false);
   const [openEditAddressMenu, setOpenEditAddressMenu] = useState(null); // Store selected address
-  const [isCartButtonForMobile, setIsCartButtonForMobile] = useState(true)
+  const [isCartButtonForMobile, setIsCartButtonForMobile] = useState(true);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const location = useLocation();
 
   const fetchUser = async () => {
     const userData = await fetchUserDetails()
-    // console.log("userData: ", userData);
-    dispatch(setUserDetails(userData.data))
+    if (userData?.data) {
+      dispatch(setUserDetails(userData.data))
+    }
   }
   
   useEffect(() => {
@@ -122,37 +141,45 @@ function App() {
   }
 
   useEffect(() => {
-    fetchCartItem()
     fetchUser()
     fetchCategory()
     fetchSubCategory()
-    fetchAddress()
   }, [])
 
   useEffect(() => {
-    if (user._id) { // Fetch cart only if the user is logged in
+    if (user?._id) { // Fetch cart and address only if user is logged in
       fetchCartItem();
+      fetchAddress();
     }
   }, [user]);
 
   
   return (
-    <>
-      <Header
-        setIsLoginOpen={setIsLoginOpen}
-        setIsCartMenuOpen={setIsCartMenuOpen}
-      />
+    <div className="min-h-screen w-full flex justify-center bg-[url('/bg.jpg')] bg-fixed bg-cover bg-center overflow-x-hidden">
+      {/* Video Preloader */}
+      {preloaderActive && (
+        <VideoPreloader onComplete={handlePreloaderComplete} />
+      )}
 
-      <main className="min-h-[77vh] w-full bg-white">
-        <Outlet
-          fetchAddress={fetchAddress}
-          context={{ setIsLoginOpen }}
+      {/* White canvas directly loaded */}
+      <div className="w-full max-w-[1380px] min-h-screen bg-white shadow-[0_0_50px_rgba(0,0,0,0.35)] flex flex-col relative border-x border-slate-200/40">
+        <Header
+          setIsLoginOpen={setIsLoginOpen}
+          setIsCartMenuOpen={setIsCartMenuOpen}
         />
-      </main>
 
-      {
-        location.pathname !== "/checkout" && <Footer />
-      }
+        <main className="flex-1 w-full bg-white">
+          <Outlet
+            fetchAddress={fetchAddress}
+            context={{ setIsLoginOpen }}
+          />
+        </main>
+
+        {
+          location.pathname !== "/checkout" && <Footer />
+        }
+      </div>
+
       <Toaster />
 
       {/* Cart option for mobile if there is something in cart */}
@@ -223,7 +250,7 @@ function App() {
           <Login setIsLoginOpen={setIsLoginOpen} />
         </>
       )}
-    </>
+    </div>
   );
 }
 

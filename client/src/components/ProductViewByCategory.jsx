@@ -57,14 +57,18 @@ function ProductViewByCategory({ id, name }) {
 
     return (
         <>
-            <div className="mx-auto flex justify-between">
-                <h2 className="font-bold text-lg mb-3">{name}</h2>
+            <div className="mx-auto flex justify-between items-center mb-3">
+                <h2 className="font-bold text-lg text-[#0c286e] flex items-center gap-2">
+                    <span className="text-[#f37023]">✦</span>
+                    <span>{name}</span>
+                </h2>
                 <Link 
                     to={`/all-products-by-category/${id}`} 
                     state={{ categoryId: id }} 
-                    className="text-[#0C831F] text-xl font-semibold"
+                    className="text-[#f37023] hover:text-[#d45811] text-sm sm:text-base font-bold flex items-center gap-1 transition-colors group"
                 >
-                    see all
+                    <span>See All</span>
+                    <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
             </div>
 

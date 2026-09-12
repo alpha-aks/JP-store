@@ -399,7 +399,7 @@ function ViewCart() {
                                             )
                                         }
                                     </div>
-                                    <div className="flex justify-center text-white bg-[#0C831F] px-2 py-4 rounded-xl">
+                                    <div className="flex justify-center text-white bg-[#f37023] hover:bg-[#e05e13] transition-colors duration-200 px-2 py-4 rounded-xl">
                                         <button
                                             className="flex items-center gap-1 cursor-pointer"
                                             onClick={() => {

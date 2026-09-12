@@ -88,9 +88,9 @@ function ProductList() {
     // };
 
     return (
-        <section className="lg:px-35 w-full mx-auto mt-3 h-full">
+        <section className="w-full mx-auto h-full">
             {/* Sticky Category Section */}
-            <div className="fixed hidden lg:flex top-22 left-0 w-full bg-white z-10 shadow-md overflow-visible">
+            <div className="sticky top-22 hidden lg:flex w-full bg-white z-20 shadow-sm border-b overflow-visible">
                 <div className="w-full max-w-screen-xl mx-auto flex justify-center text-[#666666]">
                     {allCategory.slice(0, 6).map((category) => {
                         const firstSubCategory = allSubCategory.find(subCategory =>
@@ -152,7 +152,7 @@ function ProductList() {
             </div>
 
             {/* Category name for md and sm screen */}
-            <div className="fixed lg:hidden flex top-30 left-0 w-full bg-white z-10 shadow-md p-2">
+            <div className="sticky lg:hidden flex top-28 w-full bg-white z-20 shadow-sm p-2 border-b">
                 <span>
                     {allCategory.find((category) => category._id === categoryId)?.name ||
                         "Select a Category"}
@@ -160,7 +160,7 @@ function ProductList() {
             </div>
 
             {/* Scrollable Content */}
-            <div className="h-screen lg:mt-11 mt-16 grid grid-cols-[100px_1fr] md:grid-cols-[162px_1fr] lg:grid-cols-[260px_1fr]">
+            <div className="h-screen mt-2 grid grid-cols-[100px_1fr] md:grid-cols-[162px_1fr] lg:grid-cols-[260px_1fr]">
                 {/* Left (SubCategory) */}
                 <div className="h-[80vh] overflow-y-auto flex flex-col rounded border border-gray-200 no-scrollbar">
                     {filteredSubCategories.map((subCategory, index) => (

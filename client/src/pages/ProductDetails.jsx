@@ -96,7 +96,7 @@ function ProductDetails() {
     return (
         <>
             {/* lg and above screen */}
-            <div className="hidden lg:grid lg:grid-cols-[48vw_1fr] w-full px-24 mb-5 mx-auto">
+            <div className="hidden lg:grid lg:grid-cols-2 w-full lg:px-8 mb-5 mx-auto">
                 {/* Left Section: Image & Description */}
                 <div className="flex flex-col border-r-1 border-gray-200">
                     <div className="h-[81vh] flex flex-col gap-5 justify-center items-center bg-white border-b-1 border-gray-200">

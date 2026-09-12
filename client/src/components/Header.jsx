@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/blinkitlogo.jpg";
+const logo = "/Jp store logo.png";
 import SearchBar from "./SearchBar";
 import useMobile from "../hooks/useMobile";
 import { HiOutlineShoppingCart } from "react-icons/hi";
@@ -68,13 +68,13 @@ function Header({ setIsCartMenuOpen }) {
     }
 
     return (
-        <header className="fixed top-0 left-0 w-full h-28 lg:h-22 lg:min-h-15 bg-white px-2 border-b border-gray-200 z-40">
+        <header className="sticky top-0 w-full h-28 lg:h-22 lg:min-h-15 bg-white px-2 border-b border-gray-200 z-40">
             {!(isSearchPage && isMobile) && (
                 <div className="container mx-auto flex gap-1 items-center px-4 justify-between lg:max-w-full">
                     {/* Logo */}
-                    <div className="h-full lg:p-2 lg:border-r border-gray-200">
-                        <Link to="/" className="h-full flex items-center justify-center">
-                            <img src={logo} alt="Jp store" className="lg:max-w-[110px] lg:max-h-[65px] max-w-[100px] max-h-[50px] w-auto h-auto" />
+                    <div className="h-full lg:px-3 flex items-center">
+                        <Link to="/" className="h-full flex items-center justify-center py-1">
+                            <img src={logo} alt="Jp store" className="h-14 w-auto lg:h-18 lg:max-h-[70px] max-h-[54px] object-contain transition-transform duration-200 hover:scale-105" />
                         </Link>
                     </div>
 
@@ -139,7 +139,7 @@ function Header({ setIsCartMenuOpen }) {
 
                         {/* Cart Button */}
                         <button
-                            className="min-w-[7rem] w-auto justify-around hidden lg:flex items-center bg-[#0C831F] px-2 py-2 gap-1 text-white cursor-pointer rounded-lg"
+                            className="min-w-[7rem] w-auto justify-around hidden lg:flex items-center bg-[#f37023] hover:bg-[#e05e13] transition-colors duration-200 px-2 py-2 gap-1 text-white cursor-pointer rounded-lg"
                             onClick={() => {
                                 if (user._id) {
                                     setIsCartMenuOpen(true);

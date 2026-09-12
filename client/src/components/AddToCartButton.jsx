@@ -74,10 +74,10 @@ function AddToCartButton({ data }) {
         <>
             {isItemAvailableInCart ? (
                 <div className={`w-full flex items-center font-bold text-md text-white 
-                    ${data?.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-[#318616]"} 
-                    rounded-lg`}>
+                    ${data?.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-[#f37023]"} 
+                    rounded-lg shadow-sm`}>
                     <button
-                        className="px-1 py-2 w-1/3 text-center cursor-pointer"
+                        className="px-1 py-2 w-1/3 text-center cursor-pointer hover:bg-black/10 rounded-l-lg transition-colors"
                         onClick={(e) => decreaseQty(e)}
                         disabled={data?.stock === 0}
                     >
@@ -87,7 +87,7 @@ function AddToCartButton({ data }) {
                         {cartItemDetails?.quantity}
                     </span>
                     <button
-                        className="p-1 w-1/3 text-center cursor-pointer"
+                        className="p-1 w-1/3 text-center cursor-pointer hover:bg-black/10 rounded-r-lg transition-colors"
                         onClick={(e) => increaseQuantity(e)}
                         disabled={data?.stock === 0}
                     >
@@ -97,10 +97,10 @@ function AddToCartButton({ data }) {
             ) : (
                 <div className="rounded">
                     <button
-                        className={`px-4 py-1 border-2 rounded-lg font-medium transition-all duration-200 
+                        className={`px-4 py-1 border-2 rounded-lg font-semibold transition-all duration-200 
                             ${data?.stock === 0 
                             ? "border-gray-400 text-gray-400 cursor-not-allowed" 
-                            : "text-[#318616] border-[#318616] hover:bg-[#318616] hover:text-white cursor-pointer"}`}
+                            : "text-[#f37023] border-[#f37023] hover:bg-[#f37023] hover:text-white cursor-pointer shadow-sm"}`}
                         onClick={(e) => handleAddToCart(e)}
                         disabled={data?.stock === 0}
                     >
