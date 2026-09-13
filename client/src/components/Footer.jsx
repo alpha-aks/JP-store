@@ -1,7 +1,7 @@
 import { FaInstagram, FaLinkedinIn, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import { FaXTwitter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
 function Footer() {
@@ -80,14 +80,6 @@ function Footer() {
                                     className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#f37023] border border-white/10 hover:border-[#f37023] text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200"
                                 >
                                     <FaXTwitter size={17} />
-                                </a>
-                                <a
-                                    href="https://github.com"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#f37023] border border-white/10 hover:border-[#f37023] text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200"
-                                >
-                                    <FaGithub size={17} />
                                 </a>
                             </div>
                         </div>
