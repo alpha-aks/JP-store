@@ -1,9 +1,8 @@
 import { FaInstagram, FaLinkedinIn, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { FaGithub, FaXTwitter, FaTruckFast, FaShieldHalved } from "react-icons/fa6";
+import { FaGithub, FaXTwitter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { MdOutlineVerifiedUser, MdSupportAgent } from "react-icons/md";
 
 function Footer() {
     const allCategory = useSelector((state) => state.product.allCategory) || [];
@@ -24,55 +23,6 @@ function Footer() {
 
             {/* Decorative Gold Keyline */}
             <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#fbbf24]/50 to-transparent"></div>
-
-            {/* Royal Trust Badges Bar */}
-            <div className="w-full border-b border-white/10 bg-white/[0.02]">
-                <div className="container mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {/* Badge 1 */}
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#f37023]/40 transition-all duration-300">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#f37023] to-[#d97706] flex items-center justify-center text-white shadow-lg shrink-0">
-                            <FaTruckFast size={20} />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-white tracking-wide">ઝડપી ડિલિવરી</h4>
-                            <p className="text-[11px] text-amber-200/80">Delivered in 8-15 mins</p>
-                        </div>
-                    </div>
-
-                    {/* Badge 2 */}
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#f37023]/40 transition-all duration-300">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#f37023] to-[#d97706] flex items-center justify-center text-white shadow-lg shrink-0">
-                            <MdOutlineVerifiedUser size={22} />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-white tracking-wide">શ્રેષ્ઠ ગુણવત્તા</h4>
-                            <p className="text-[11px] text-amber-200/80">100% Original & Genuine</p>
-                        </div>
-                    </div>
-
-                    {/* Badge 3 */}
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#f37023]/40 transition-all duration-300">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#f37023] to-[#d97706] flex items-center justify-center text-white shadow-lg shrink-0">
-                            <FaShieldHalved size={20} />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-white tracking-wide">સુરક્ષિત પેમેન્ટ</h4>
-                            <p className="text-[11px] text-amber-200/80">100% Razorpay Secured</p>
-                        </div>
-                    </div>
-
-                    {/* Badge 4 */}
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#f37023]/40 transition-all duration-300">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#f37023] to-[#d97706] flex items-center justify-center text-white shadow-lg shrink-0">
-                            <MdSupportAgent size={22} />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-white tracking-wide">ગ્રાહક સેવા</h4>
-                            <p className="text-[11px] text-amber-200/80">Dedicated Daily Support</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* Main Footer Links & Info */}
             <div className="container mx-auto px-4 py-10 lg:py-14">
