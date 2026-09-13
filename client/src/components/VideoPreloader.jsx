@@ -49,10 +49,14 @@ export default function VideoPreloader({ onComplete }) {
               autoPlay
               muted
               playsInline
-              preload="auto"
+              webkit-playsinline="true"
+              disablePictureInPicture
+              disableRemotePlayback
+              controls={false}
+              controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
               onCanPlay={() => setIsReady(true)}
               onEnded={triggerSplash}
-              className={`w-full max-h-[75vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.7)] transition-all duration-500 ${
+              className={`w-full max-h-[75vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.7)] pointer-events-none select-none transition-all duration-500 ${
                 isReady ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             />
