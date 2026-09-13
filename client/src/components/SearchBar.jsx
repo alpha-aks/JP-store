@@ -15,7 +15,7 @@ function SearchBar() {
         setIsSearchPage(location.pathname === "/search");
     }, [location]);
 
-    const searchItems = ["milk", "bread", "sugar", "apple", "paneer", "chocolate", "rice", "butter"];
+    const searchItems = ["iPhone Case", "Fast Charger", "Type-C Cable", "Wireless Earbuds", "Power Bank", "Screen Protector", "Bluetooth Speaker", "Smart Watch Strap"];
     const sequence = searchItems.flatMap(item => [`Search "${item}"`, 500]);
 
     const redirectToSearchPage = () => {

@@ -46,7 +46,7 @@ function Footer() {
                         </div>
                         <div>
                             <h4 className="text-sm font-bold text-white tracking-wide">શ્રેષ્ઠ ગુણવત્તા</h4>
-                            <p className="text-[11px] text-amber-200/80">100% Fresh & Genuine</p>
+                            <p className="text-[11px] text-amber-200/80">100% Original & Genuine</p>
                         </div>
                     </div>
 
@@ -99,7 +99,7 @@ function Footer() {
                         </div>
 
                         <p className="text-sm text-gray-300/90 leading-relaxed">
-                            <span className="text-[#fbbf24] font-semibold">Kem Cho, Ahmedabad!</span> Your trusted quick-commerce partner delivering fresh groceries, daily essentials, snacks, and household supplies straight to your doorstep with royal care.
+                            <span className="text-[#fbbf24] font-semibold">Kem Cho, Ahmedabad!</span> Your trusted quick-commerce partner delivering premium phone cases, fast chargers, cables, audio gadgets, and electronic accessories straight to your doorstep with royal care.
                         </p>
 
                         <div className="pt-2">
@@ -263,10 +263,10 @@ function Footer() {
                         {/* Royal Slogan Stamp */}
                         <div className="mt-4 p-3 rounded-xl bg-gradient-to-r from-white/5 to-[#f37023]/10 border border-[#f37023]/20">
                             <p className="text-[11px] text-amber-200 font-medium leading-snug">
-                                &ldquo;ગુજરાતની પોતાની ઓનલાઇન કરિયાણાની દુકાન&rdquo;
+                                &ldquo;ગુજરાતનું પોતાનું મોબાઇલ અને ઇલેક્ટ્રોનિક્સ એસેસરીઝ સ્ટોર&rdquo;
                             </p>
                             <span className="text-[10px] text-gray-400 block mt-1">
-                                Gujarat&apos;s very own online grocery store
+                                Gujarat&apos;s very own mobile &amp; electronic accessories store
                             </span>
                         </div>
                     </div>

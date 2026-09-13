@@ -49,7 +49,7 @@ const verificationEmailTemplate = ({ name, url }) => {
                                 Dear <strong>${name}</strong>,
                             </p>
                             <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin: 0 auto 20px auto; max-width: 460px;">
-                                Thank you for joining <strong>JP Store</strong>! Your daily fresh groceries, dairy, farm-fresh produce, and authentic Gujarati specialties are just one click away.
+                                Thank you for joining <strong>JP Store</strong>! Your premium phone cases, fast chargers, cables, audio gadgets, and electronic accessories are just one click away.
                             </p>
                             <p style="font-size: 13px; color: #6b7280; line-height: 1.5; margin: 0 0 24px 0;">
                                 Please verify your email address to activate your account and start shopping:
