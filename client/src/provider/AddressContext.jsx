@@ -26,7 +26,10 @@ export const AddressProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchAddress();
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            fetchAddress();
+        }
     }, []);
 
     return (
