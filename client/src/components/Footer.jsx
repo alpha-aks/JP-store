@@ -17,7 +17,7 @@ function Footer() {
 
     return (
         <footer className="w-full relative overflow-hidden bg-gradient-to-b from-[#091b42] via-[#071534] to-[#040d22] text-white">
-            {/* Royal Top Border Pattern inspired by the Ahmedabad banner */}
+            {/* Royal Top Border Pattern inspired by the Gundala banner */}
             <div className="w-full h-3 bg-gradient-to-r from-[#d97706] via-[#f37023] to-[#d97706] relative">
                 <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:8px_8px]"></div>
             </div>
@@ -99,7 +99,7 @@ function Footer() {
                         </div>
 
                         <p className="text-sm text-gray-300/90 leading-relaxed">
-                            <span className="text-[#fbbf24] font-semibold">Kem Cho, Ahmedabad!</span> Your trusted quick-commerce partner delivering premium phone cases, fast chargers, cables, audio gadgets, and electronic accessories straight to your doorstep with royal care.
+                            <span className="text-[#fbbf24] font-semibold">Kem Cho, Gundala!</span> Your trusted quick-commerce partner delivering premium phone cases, fast chargers, cables, audio gadgets, and electronic accessories straight to your doorstep with royal care.
                         </p>
 
                         <div className="pt-2">
@@ -238,17 +238,17 @@ function Footer() {
                         </ul>
                     </div>
 
-                    {/* Ahmedabad Service & Contact (3 cols) */}
+                    {/* Gundala Shop Address & Contact (3 cols) */}
                     <div className="lg:col-span-3 space-y-3">
                         <h4 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
                             <span className="w-2 h-2 rounded-full bg-[#f37023]"></span>
-                            Ahmedabad Hub
+                            Shop Address (Gundala)
                         </h4>
                         
                         <div className="space-y-3 text-xs text-gray-300">
                             <div className="flex items-start gap-2.5">
                                 <FaMapMarkerAlt className="text-[#f37023] mt-0.5 shrink-0" size={14} />
-                                <span>Express Delivery across Ahmedabad, Gujarat - 380001</span>
+                                <span>Gundala (jas), Taluka Vinchhiya, District Rajkot, Gujarat - 360055</span>
                             </div>
                             <div className="flex items-center gap-2.5">
                                 <FaPhoneAlt className="text-[#f37023] shrink-0" size={13} />
@@ -277,7 +277,7 @@ function Footer() {
             {/* Bottom Copyright Bar */}
             <div className="w-full border-t border-white/10 bg-black/30 py-5">
                 <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-3">
-                    <p>© {new Date().getFullYear()} JP Store. All rights reserved. Crafted with pride for Ahmedabad.</p>
+                    <p>© {new Date().getFullYear()} JP Store. All rights reserved. Crafted with pride for Gundala.</p>
                     <div className="flex items-center gap-4 text-xs text-gray-400">
                         <span className="text-amber-200/90 font-medium">Safe & Secure Ordering</span>
                         <span>•</span>

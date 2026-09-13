@@ -49,7 +49,7 @@ function Home() {
             <div className="w-full overflow-hidden border-b border-gray-100 shadow-sm">
                 <img
                     src="/banner.png"
-                    alt="Kem Cho, Ahmedabad! Premium Mobile & Electronic Accessories - JP Store"
+                    alt="Kem Cho, Gundala! Premium Mobile & Electronic Accessories - JP Store"
                     className="w-full h-auto min-h-[180px] object-cover object-center block cursor-pointer hover:opacity-98 transition-opacity"
                 />
             </div>

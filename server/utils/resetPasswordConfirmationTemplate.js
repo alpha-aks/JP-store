@@ -20,18 +20,18 @@ const resetPasswordConfirmationTemplate = ({ name, email, supportEmail }) => {
                         <!-- Top Arch Crown & Heritage Slogan -->
                         <div style="background-color: #0c286e; padding: 14px 20px 10px 20px; text-align: center; border-bottom: 2px solid #f59e0b;">
                             <p style="margin: 0; color: #fef3c7; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: bold;">
-                                ✦ શુદ્ધતા અને વિશ્વાસ • KEM CHO AHMEDABAD ✦
+                                ✦ શુદ્ધતા અને વિશ્વાસ • KEM CHO GUNDALA ✦
                             </p>
                             <h1 style="margin: 4px 0 0 0; color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: 1px;">
                                 JP STORE
                             </h1>
                         </div>
 
-                        <!-- Ahmedabad Banner inside Window Arch -->
+                        <!-- Gundala Banner inside Window Arch -->
                         <div style="padding: 10px 10px 0 10px; text-align: center;">
                             <img 
                                 src="https://images.prismic.io/alphas/uTPvIWxZAYxoWQ6u_Banner-2.png?auto=format,compress" 
-                                alt="Kem Cho Ahmedabad - JP Store" 
+                                alt="Kem Cho Gundala - JP Store" 
                                 style="width: 100%; max-width: 540px; height: auto; border-radius: 24px 24px 8px 8px; border: 1px solid #fde68a; display: block; margin: 0 auto;"
                             />
                         </div>
@@ -75,7 +75,10 @@ const resetPasswordConfirmationTemplate = ({ name, email, supportEmail }) => {
                                 ✦ તાજગી અને વિશ્વાસનું પ્રતીક ✦
                             </p>
                             <p style="margin: 6px 0 2px 0; font-size: 12px; color: #0c286e; font-weight: bold;">
-                                With Warm Regards, <br>JP Store Team • Ahmedabad
+                                With Warm Regards, <br>JP Store Team
+                            </p>
+                            <p style="margin: 3px 0 0 0; font-size: 11px; color: #6b7280; line-height: 1.4;">
+                                Gundala (jas), Taluka Vinchhiya, District Rajkot, Gujarat - 360055
                             </p>
                             <p style="margin: 8px 0 0 0; font-size: 10px; color: #9ca3af;">
                                 © ${new Date().getFullYear()} JP Store. All rights reserved.
