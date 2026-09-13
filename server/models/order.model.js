@@ -49,7 +49,7 @@ const orderSchema = new mongoose.Schema({
     },
     payment_type: {
         type: String,
-        enum: ["Cash on Delivery", "Stripe", "Razorpay"],
+        enum: ["Cash on Delivery", "Razorpay"],
         default: "Cash on Delivery",
     },
     invoice_receipt: {

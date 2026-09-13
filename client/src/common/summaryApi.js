@@ -157,10 +157,6 @@ const summaryApi = {
         url: "/api/order/add-cash-on-delivery-order",
         method: "post"
     },
-    addStripPaymentOrder: {
-        url: "/api/order/add-stripe-payment-checkout",
-        method: "post"
-    },
     addRazorpayPaymentOrder: {
         url: "/api/order/add-razor-payment-checkout",
         method: "post"

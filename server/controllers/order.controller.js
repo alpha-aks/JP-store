@@ -1,12 +1,9 @@
 import OrderModel from "../models/order.model.js";
 import UserModel from "../models/user.model.js"
 import dotenv from "dotenv";
-import Stripe from "../config/stripe.js";
-import { pricewithDiscount } from "../utils/PriceWithDiscount.js";
 import CartProductModel from "../models/cartProduct.model.js";
 import razorpayInstance from "../utils/razorpayConfig.js";
 import crypto from "crypto";
-// import Stripe from "../config/stripe.js";
 
 dotenv.config(); // Load environment variables
 export const createCashOnDeliveryOrderController = async (req, res) => {
@@ -96,192 +93,6 @@ export const createCashOnDeliveryOrderController = async (req, res) => {
     }
 };
 
-export const createStripePaymentOrderController = async (req, res) => {
-    try {
-        const userId = req.userId;
-        const {
-            itemList,
-            totalAmt,
-            subTotalAmt,
-            delivery_address_id,
-            otherCharge
-        } = req.body;
-        // console.log("totalAmt: ", totalAmt);
-        // console.log("subTotalAmt: ", subTotalAmt);
-        // console.log("otherCharge: ", otherCharge);
-
-        if (!userId) {
-            return res.status(401).json({
-                message: "Please login to access this endpoint.",
-                success: false,
-                error: true
-            });
-        }
-
-        const user = await UserModel.findById(userId);
-
-        if (!user) {
-            return res.status(401).json({
-                message: "User does not exist.",
-                success: false,
-                error: true
-            });
-        }
-
-        if (!itemList || !itemList.length) {
-            return res.status(400).json({
-                message: "Item list cannot be empty",
-                error: true,
-                success: false
-            });
-        }
-
-        if (!delivery_address_id) {
-            return res.status(400).json({
-                message: "Delivery address is required",
-                error: true,
-                success: false
-            });
-        }
-
-        // Generate Order ID
-        const generateOrderId = () => {
-            const randomNumber = Math.floor(100000 + Math.random() * 900000);
-            const now = new Date();
-            const year = now.getFullYear().toString().slice(-2);
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `ORD${randomNumber}${day}${month}${year}`;
-        };
-
-        const orderId = generateOrderId();
-
-        const filteredItems = itemList.map(item => ({
-            productId: item.productId._id,
-            quantity: item.quantity
-        }));
-
-        // Prepare line items
-        const line_items = itemList.map(item => ({
-            price_data: {
-                currency: "inr",
-                product_data: {
-                    name: item.productId.name,
-                    images: item.productId.image,
-                    metadata: {
-                        productId: item.productId._id
-                    }
-                },
-                unit_amount: pricewithDiscount(item.productId.price, item.productId.discount) * 100,
-            },
-            adjustable_quantity: {
-                enabled: false,
-            },
-            quantity: item.quantity
-        }));
-
-        // Add Other Charges as a line item if it's greater than 0
-        if (otherCharge > 0) {
-            line_items.push({
-                price_data: {
-                    currency: "inr",
-                    product_data: {
-                        name: "Other Charges",
-                        description: "Additional charges including tips, donation, etc.",
-                    },
-                    unit_amount: otherCharge * 100, // Now it's correctly rounded
-                },
-                quantity: 1,
-            });
-        }
-
-        const params = {
-            submit_type: "pay",
-            mode: "payment",
-            payment_method_types: ['card'],
-            customer_email: user.email,
-            metadata: {
-                userId: userId,
-                addressId: delivery_address_id,
-                totalAmt: totalAmt,
-                filteredItems: JSON.stringify(filteredItems),
-                orderId: orderId,
-                subTotalAmt: subTotalAmt,
-            },
-            line_items: line_items,
-            success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.CLIENT_URL}/cancel`
-        };
-
-        // Create a Checkout Session
-        const session = await Stripe.checkout.sessions.create(params);
-
-        return res.status(200).json(session)
-
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Something went wrong",
-            success: false
-        });
-    }
-};
-
-//Stripe webhook
-//http://localhost:8080/api/order/webhook
-export const stripeWebhookPayment = async (req, res) => {
-    const event = req.body;
-    console.log("event: ", event);
-    const endPointSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY
-
-    // Handle the event
-    switch (event.type) {
-        case 'checkout.session.completed':
-            const session = event.data.object
-            const lineItems = await Stripe.checkout.sessions.listLineItems(session.id)
-            console.log("lineItems: ", lineItems);
-            console.log("session: ", session);
-            
-            const userId = session.metadata.userId
-
-            const newOrder = new OrderModel({
-                userId: userId,
-                orderId: session.metadata.orderId,
-                itemList: JSON.parse(session.metadata.filteredItems),
-                paymentId: session.payment_intent,
-                delivery_address: session.metadata.addressId,
-                subTotalAmt: session.metadata.subTotalAmt,
-                totalAmt: session.metadata.totalAmt,
-                order_status: "Pending", // Default status
-                invoice_receipt: ""
-            });
-
-            console.log("newOrder: ", newOrder);
-
-            await newOrder.save();
-            
-            if(newOrder) {
-                await CartProductModel.deleteMany({userId})
-                return res.status(201).json({
-                    message: "Order placed successfully",
-                    error: false,
-                    success: true,
-                    order: newOrder
-                });
-            } else {
-                return res.status(500).json({
-                    message: "Failed to place order",
-                    error: true,
-                    success: false
-                });
-            }
-            break;
-        default:
-            console.log(`Unhandled event type ${event.type}`);
-    }
-
-    // Return a response to acknowledge receipt of the event
-    res.json({ received: true });
-}
 
 export const razorpayPaymentOrderController = async (req, res) => {
     try {
@@ -339,30 +150,38 @@ export const razorpayPaymentOrderController = async (req, res) => {
 
         const orderId = generateOrderId();
 
+        const compactItemList = itemList.map(item => ({
+            productId: item.productId?._id || item.productId,
+            quantity: item.quantity
+        }));
+
         // Razorpay order options
         const options = {
-            amount: totalAmt * 100,
+            amount: Math.round(Number(totalAmt) * 100),
             currency: "INR",
-            receipt: user.email,
+            receipt: user.email || `order_${orderId}`,
             payment_capture: 1,
             notes: {
-                userId,
-                itemList: JSON.stringify(itemList),
-                subTotalAmt,
-                totalAmt,
-                otherCharge,
-                delivery_address_id,
-                orderId
+                userId: String(userId),
+                itemList: JSON.stringify(compactItemList),
+                subTotalAmt: String(subTotalAmt),
+                totalAmt: String(totalAmt),
+                otherCharge: String(otherCharge),
+                delivery_address_id: String(delivery_address_id),
+                orderId: String(orderId)
             }
         };
 
         // Create Razorpay order
         const order = await razorpayInstance.orders.create(options);
 
+        const keyId = (process.env.RAZORPAY_ID_KEY || "").split(",")[0].trim();
+
         return res.status(200).json({
             message: "Razorpay order created successfully",
             error: false,
             success: true,
+            keyId,
             order
         });
 

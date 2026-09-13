@@ -8,7 +8,6 @@ import toast from "react-hot-toast"
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
 import { userCart } from "../provider/CartContext";
-import { loadStripe } from "@stripe/stripe-js";
 
 function CheckOut() {
 
@@ -62,32 +61,6 @@ function CheckOut() {
         }
     }
 
-    const handleStripePayment = async () => {
-        try {
-            const toastId = toast.loading("Redirecting to payment gateway... Please wait");
-
-            const stripePromise = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
-            const response = await Axios({
-                ...summaryApi.addStripPaymentOrder,
-                data: {
-                    itemList: cartItem,
-                    totalAmt: grandTotal,
-                    otherCharge: otherCharge,
-                    subTotalAmt: totalPriceWithOutDiscount,
-                    delivery_address_id: defaultAddress._id,
-                }
-            });
-
-            // Dismiss the loading toast before redirecting
-            toast.dismiss(toastId);
-
-            stripePromise.redirectToCheckout({ sessionId: response.data.id });
-        } catch (error) {
-            toast.dismiss();
-            toast.error(error.message || error);
-        }
-    };
 
     const handleRazorpayPayment = async () => {
         try {
@@ -104,8 +77,9 @@ function CheckOut() {
 
             // console.log(response);
             let orderData = response.data.order
+            const razorpayKey = response.data.keyId || import.meta.env.VITE_RAZORPAY_ID_KEY;
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_ID_KEY,
+                key: razorpayKey,
                 amount: response.data.order.amount,
                 currency: 'INR',
                 name: "Jp Store",
@@ -128,8 +102,6 @@ function CheckOut() {
                         headers: { "Content-Type": "application/json" }
                     })
                         .then(res => {
-                            // console.log("Verification Response:", res.data);
-
                             // Redirect based on backend response
                             if (res.data.success) {
                                 navigate("/success");
@@ -138,16 +110,28 @@ function CheckOut() {
                                 navigate("/cancel");
                             }
                         })
-                        .catch(err => console.error("Verification Error:", err));
+                        .catch(err => {
+                            console.error("Verification Error:", err);
+                            navigate("/cancel");
+                        });
                 }
 
             };
 
-            const rzp = new Razorpay(options);
+            const RazorpayConstructor = window.Razorpay || (typeof Razorpay !== "undefined" ? Razorpay : null);
+            if (!RazorpayConstructor) {
+                toast.error("Razorpay SDK not loaded. Please refresh the page.");
+                return;
+            }
+
+            const rzp = new RazorpayConstructor(options);
+            rzp.on('payment.failed', function (resp) {
+                toast.error(resp.error?.description || "Payment failed");
+            });
             rzp.open();
 
         } catch (error) {
-            toast.error(error.message || error);
+            toast.error(error.response?.data?.message || error.message || "Something went wrong with Razorpay");
         }
     };
 
@@ -155,23 +139,17 @@ function CheckOut() {
         try {
             setLoading(true)
             if (selectedPaymentMethod === "cash") {
-                handleCashOnDeliveryOrder()
-            } else if (selectedPaymentMethod === "stripe") {
-                handleStripePayment()
+                await handleCashOnDeliveryOrder()
             } else if (selectedPaymentMethod === "razorpay") {
-                handleRazorpayPayment()
+                await handleRazorpayPayment()
             }
             setIsConfirmationScreenActive(false)
-            setLoading(false)
         } catch (error) {
-            toast.error(error.message || error);
-            setLoading(false)
-
+            toast.error(error.response?.data?.message || error.message || error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-
-    }
+    };
 
     return (
         <>
@@ -201,29 +179,8 @@ function CheckOut() {
                             )}
                         </div>
 
-                        {/* Stripe Method */}
-                        <div className="py-5 px-6 overflow-y-auto border border-gray-200">
-                            <div className="flex justify-between cursor-pointer"
-                                onClick={() => {
-                                    setOptionOpen(optionOpen === "stripe" ? "" : "stripe");
-                                    setSelectedPaymentMethod(optionOpen === "stripe" ? "" : "stripe");
-                                }}
-                            >
-                                <p className="text-2xl text-[#1C1C1C]">Stripe</p>
-                                <button>
-                                    {optionOpen === "stripe" ? <FaAngleUp size={20} /> : <FaAngleDown size={20} />}
-                                </button>
-                            </div>
-                            {/* Open Stripe section */}
-                            {optionOpen === "stripe" && (
-                                <div className="mt-10 font-semibold text-gray-600">
-                                    Secure and fast payment processing powered by Stripe.
-                                </div>
-                            )}
-                        </div>
-
                         {/* Razorpay Method */}
-                        <div className="py-5 px-6 overflow-y-auto border border-gray-200">
+                        <div className="py-5 px-6 rounded-b-lg overflow-y-auto border border-t-0 border-gray-200">
                             <div className="flex justify-between cursor-pointer"
                                 onClick={() => {
                                     setOptionOpen(optionOpen === "razorpay" ? "" : "razorpay");

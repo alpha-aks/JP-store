@@ -57,7 +57,7 @@ function Footer() {
                         </div>
                         <div>
                             <h4 className="text-sm font-bold text-white tracking-wide">સુરક્ષિત પેમેન્ટ</h4>
-                            <p className="text-[11px] text-amber-200/80">Razorpay & Stripe Verified</p>
+                            <p className="text-[11px] text-amber-200/80">100% Razorpay Secured</p>
                         </div>
                     </div>
 
