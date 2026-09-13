@@ -22,6 +22,8 @@ import AddNewAddressManually from "./components/AddNewAddressManually";
 import EditAddressManually from "./components/EditAddressManually";
 import VideoPreloader from "./components/VideoPreloader";
 
+import { useAddress } from "./provider/AddressContext";
+
 function App() {
 
   const location = useLocation();
@@ -44,9 +46,14 @@ function App() {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isCartMenuOpen, setIsCartMenuOpen] = useState(false);
-  const [isAddressMenuOpen, setIsAddressMenuOpen] = useState(false);
-  const [openAddNewAddressMenu, setOpenAddNewAddressMenu] = useState(false);
-  const [openEditAddressMenu, setOpenEditAddressMenu] = useState(null); // Store selected address
+  const {
+    isAddressMenuOpen,
+    setIsAddressMenuOpen,
+    openAddNewAddressMenu,
+    setOpenAddNewAddressMenu,
+    openEditAddressMenu,
+    setOpenEditAddressMenu,
+  } = useAddress();
   const [isCartButtonForMobile, setIsCartButtonForMobile] = useState(true);
 
   const dispatch = useDispatch();

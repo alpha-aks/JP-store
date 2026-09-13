@@ -34,7 +34,19 @@ function CheckOutButton({grandTotal, totalItems, setIsAddressMenuOpen, setIsCart
                 <div>
                     {
                         addresses.length === 0 ? (
-                            <div>
+                            <div className="pb-3 mb-2 border-b border-gray-200 flex justify-between items-center">
+                                <div className="flex items-center gap-1.5 text-xs text-amber-800">
+                                    <CiLocationOn size={18} className="text-[#f37023]" />
+                                    <span>No delivery address set</span>
+                                </div>
+                                <button
+                                    className="text-xs text-white bg-[#0c831f] hover:bg-[#096a18] px-2.5 py-1 rounded-md font-semibold flex items-center gap-1 shadow-xs cursor-pointer"
+                                    onClick={() => {
+                                        setIsAddressMenuOpen(true)
+                                    }}
+                                >
+                                    <span>+ Add / GPS</span>
+                                </button>
                             </div>
                         ) : (
                             <div className=" pb-5 mb-3 border-b border-gray-500 rounded-t-xl flex justify-between items-center">

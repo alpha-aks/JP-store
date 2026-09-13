@@ -1,9 +1,10 @@
-/* eslint-disable no-undef */
 import { useState } from "react";
 import { useAddress } from "../provider/AddressContext";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { BiCurrentLocation } from "react-icons/bi";
+import { CiLocationOn } from "react-icons/ci";
 import toast from "react-hot-toast"
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
@@ -12,7 +13,7 @@ import { userCart } from "../provider/CartContext";
 function CheckOut() {
 
     const user = useSelector(state => state.user);
-    const { addresses } = useAddress()
+    const { addresses, setIsAddressMenuOpen, setOpenAddNewAddressMenu } = useAddress()
     const { clearTheCart } = userCart()
     const navigate = useNavigate();
     const location = useLocation();
@@ -23,7 +24,7 @@ function CheckOut() {
     const cartItem = useSelector((state) => state.cartItem.cart);
     // console.log("cartItem", cartItem);
 
-    const defaultAddress = addresses.find((address) => address.defaultAddress === true)
+    const defaultAddress = addresses.find((address) => address.defaultAddress === true) || addresses[0];
     // console.log("defaultAddress: ", defaultAddress)
 
     const [optionOpen, setOptionOpen] = useState("")
@@ -32,6 +33,11 @@ function CheckOut() {
     const [loading, setLoading] = useState(false)
 
     const handleCashOnDeliveryOrder = async () => {
+        if (!defaultAddress?._id) {
+            toast.error("Please add or select a delivery address first.");
+            if (setOpenAddNewAddressMenu) setOpenAddNewAddressMenu(true);
+            return;
+        }
         try {
             const response = await Axios({
                 ...summaryApi.createCODOrder,
@@ -63,6 +69,11 @@ function CheckOut() {
 
 
     const handleRazorpayPayment = async () => {
+        if (!defaultAddress?._id) {
+            toast.error("Please add or select a delivery address first.");
+            if (setOpenAddNewAddressMenu) setOpenAddNewAddressMenu(true);
+            return;
+        }
         try {
             const response = await Axios({
                 ...summaryApi.addRazorpayPaymentOrder,
@@ -156,6 +167,56 @@ function CheckOut() {
             <div className="flex justify-between min-h-[90vh] w-screen lg:w-full xl:w-full lg:max-w-[1100px] xl:max-w-[1100px] mx-auto select-none  py-8 lg:p-8 xl:p-8 ">
                 {/* Left Section - Payment Methods */}
                 <div className="w-screen lg:w-2/3 xl:w-2/3 p-6 rounded-lg bg-white">
+                    {/* Delivery Address Banner for Mobile & Quick Verification */}
+                    <div className="mb-6 p-4 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50/60 to-orange-50/40">
+                        <div className="flex justify-between items-start gap-2">
+                            <div className="flex items-start gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-[#f37023] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                                    <CiLocationOn size={20} />
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-bold text-[#f37023] uppercase tracking-wider block">
+                                        Delivering To
+                                    </span>
+                                    {defaultAddress ? (
+                                        <>
+                                            <h4 className="text-sm font-bold text-gray-800 capitalize">
+                                                {defaultAddress.saveAs}
+                                                {defaultAddress.name ? ` (${defaultAddress.name})` : ""}
+                                            </h4>
+                                            <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
+                                                {[defaultAddress.flatHouseNumber, defaultAddress.floor, defaultAddress.street, defaultAddress.area, defaultAddress.landmark, `${defaultAddress.city}-${defaultAddress.pincode}`].filter(Boolean).join(", ")}
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p className="text-xs text-red-600 font-medium mt-0.5">
+                                            No address selected. Please add or detect your delivery location.
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="shrink-0 flex flex-col sm:flex-row gap-1.5">
+                                {defaultAddress && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsAddressMenuOpen && setIsAddressMenuOpen(true)}
+                                        className="px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-xs font-semibold rounded-lg shadow-xs cursor-pointer"
+                                    >
+                                        Change
+                                    </button>
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => setOpenAddNewAddressMenu && setOpenAddNewAddressMenu(true)}
+                                    className="px-3 py-1.5 bg-[#0c831f] hover:bg-[#0a6c1a] text-white text-xs font-semibold rounded-lg shadow-xs flex items-center justify-center gap-1 cursor-pointer"
+                                >
+                                    <BiCurrentLocation size={13} />
+                                    <span>{defaultAddress ? "+ Add / GPS" : "Detect GPS"}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <h2 className="text-lg lg:text-2xl xl:text-2xl font-semibold mb-4">Select Payment Method</h2>
                     <div>
                         {/* COD Method */}
@@ -207,13 +268,49 @@ function CheckOut() {
                 {/* Right Section - Cart Summary */}
                 <div className="hidden lg:block xl:block w-1/3 bg-white h-[80vh] py-5 border border-gray-200">
                     {/* address */}
-                    <div className="px-6 pb-5">
-                        <h3 className="text-xl text-[#676767] font-semibold">Delivery Address</h3>
-                        <p className="text-sm text-gray-400">
-                            <span className="font-semibold">{defaultAddress?.saveAs}: </span>
-                            <span>{[defaultAddress?.street, defaultAddress?.flatHouseNumber, defaultAddress?.floor, defaultAddress?.landmark, `${defaultAddress?.city}-${defaultAddress?.pincode}`].filter(Boolean).join(", ")}
-                            </span>
-                        </p>
+                    <div className="px-6 pb-4 border-b border-gray-100">
+                        <div className="flex justify-between items-center mb-1.5">
+                            <h3 className="text-sm uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
+                                <CiLocationOn className="text-[#f37023]" size={18} />
+                                Delivery Address
+                            </h3>
+                            {addresses.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="text-xs font-semibold text-[#f37023] hover:underline cursor-pointer"
+                                    onClick={() => setIsAddressMenuOpen && setIsAddressMenuOpen(true)}
+                                >
+                                    Change
+                                </button>
+                            )}
+                        </div>
+                        {defaultAddress ? (
+                            <div className="text-xs text-gray-600 bg-amber-50/50 p-2.5 rounded-lg border border-amber-200/60">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                    <span className="font-bold text-[#0c286e] capitalize bg-white px-2 py-0.5 rounded border border-gray-200 text-[11px]">
+                                        {defaultAddress?.saveAs || "Address"}
+                                    </span>
+                                    {defaultAddress?.mobileNumber && (
+                                        <span className="text-gray-400 text-[11px]">• {defaultAddress.mobileNumber}</span>
+                                    )}
+                                </div>
+                                <p className="line-clamp-2 leading-relaxed text-gray-700">
+                                    {[defaultAddress?.flatHouseNumber, defaultAddress?.floor, defaultAddress?.street, defaultAddress?.area, defaultAddress?.landmark, `${defaultAddress?.city}-${defaultAddress?.pincode}`].filter(Boolean).join(", ")}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 space-y-2">
+                                <p className="font-semibold">⚠️ No delivery address found</p>
+                                <button
+                                    type="button"
+                                    onClick={() => setOpenAddNewAddressMenu && setOpenAddNewAddressMenu(true)}
+                                    className="w-full py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-semibold flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                                >
+                                    <BiCurrentLocation size={14} />
+                                    <span>Fetch Current Location (Free GPS)</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                     {/* Items */}
                     <div className="bg-[#FBFBFB] flex justify-between px-6 py-5 border border-gray-200">
