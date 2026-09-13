@@ -30,7 +30,7 @@ const verificationEmailTemplate = ({ name, url }) => {
                         <!-- Ahmedabad Banner Edge-to-Edge inside Window Arch -->
                         <div style="padding: 10px 10px 0 10px; text-align: center;">
                             <img 
-                                src="https://images.prismic.io/alphas/ZroTVnLBjkcTnobh_Banner-2.png?auto=format,compress" 
+                                src="https://images.prismic.io/alphas/uTPvIWxZAYxoWQ6u_Banner-2.png?auto=format,compress" 
                                 alt="Kem Cho Ahmedabad - JP Store" 
                                 style="width: 100%; max-width: 540px; height: auto; border-radius: 24px 24px 8px 8px; border: 1px solid #fde68a; display: block; margin: 0 auto;"
                             />
