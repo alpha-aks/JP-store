@@ -45,13 +45,18 @@ function Home() {
 
     return (
         <div className="w-full">
-            {/* Hero Promo Banner - Edge to Edge of the white page canvas */}
-            <div className="w-full overflow-hidden border-b border-gray-100 shadow-sm">
-                <img
-                    src="/banner.png"
-                    alt="Kem Cho, Gundala! Premium Mobile & Electronic Accessories - JP Store"
-                    className="w-full h-auto min-h-[180px] object-cover object-center block cursor-pointer hover:opacity-98 transition-opacity"
-                />
+            {/* Hero Promo Banner - Responsive: Banner.jpg for mobile screen, banner.png for desktop */}
+            <div className="w-full overflow-hidden border-b border-gray-100 shadow-xs bg-[#f68920]">
+                <picture className="w-full block">
+                    <source media="(max-width: 767px)" srcSet="/Banner.jpg" />
+                    <source media="(min-width: 768px)" srcSet="/banner.png" />
+                    <img
+                        src="/banner.png"
+                        alt="Kem Cho, Gundala! Premium Mobile & Electronic Accessories - JP Store"
+                        className="w-full h-auto block object-cover object-center cursor-pointer hover:opacity-98 transition-opacity"
+                        loading="eager"
+                    />
+                </picture>
             </div>
 
             <section className="px-4 sm:px-6 w-full mx-auto pb-8">
@@ -132,10 +137,8 @@ function Home() {
                 </div>
 
             {/* Display Category Products */}
-            <div className="w-full max-w-[1320px] mx-auto my-4">
-                <div className="mx-auto flex justify-between">
-                </div>
-                <div className="hidden lg:block">
+            <div className="w-full max-w-[1320px] mx-auto my-4 sm:my-6">
+                <div className="w-full space-y-6 sm:space-y-8">
                     {allCategory.slice(0, 7).map((category, index) => (
                         <ProductViewByCategory
                             key={index}

@@ -72,19 +72,21 @@ function ProductViewByCategory({ id, name }) {
                 </Link>
             </div>
 
-            <div className="relative w-full">
-                {/* Left Arrow Button */}
+            <div className="relative w-full group/carousel">
+                {/* Left Arrow Button (Desktop only) */}
                 <button 
                     onClick={scrollLeft} 
-                    className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-100 z-10"
+                    className="hidden md:flex absolute -left-3 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-amber-50 text-gray-700 hover:text-[#f37023] z-10 border border-gray-200 cursor-pointer transition-all duration-200 hover:scale-105"
+                    aria-label="Scroll left"
                 >
-                    <FaAngleLeft />
+                    <FaAngleLeft size={16} />
                 </button>
 
-                {/* Product List */}
+                {/* Product List - Touch scrollable on mobile */}
                 <div 
                     ref={containerRef} 
-                    className="flex gap-4 md:gap-5 lg:gap-6 mx-auto container py-4 overflow-hidden whitespace-nowrap"
+                    className="flex gap-3 sm:gap-4 md:gap-5 lg:gap-6 py-3 sm:py-4 overflow-x-auto scrollbar-none scroll-smooth w-full px-1"
+                    style={{ WebkitOverflowScrolling: "touch" }}
                 >
                     {loading &&
                         loadingCardNumber.map((_, index) => (
@@ -100,12 +102,13 @@ function ProductViewByCategory({ id, name }) {
                     }
                 </div>
 
-                {/* Right Arrow Button */}
+                {/* Right Arrow Button (Desktop only) */}
                 <button 
                     onClick={scrollRight} 
-                    className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-100 z-10"
+                    className="hidden md:flex absolute -right-3 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-amber-50 text-gray-700 hover:text-[#f37023] z-10 border border-gray-200 cursor-pointer transition-all duration-200 hover:scale-105"
+                    aria-label="Scroll right"
                 >
-                    <FaAngleRight />
+                    <FaAngleRight size={16} />
                 </button>
             </div>
         </>

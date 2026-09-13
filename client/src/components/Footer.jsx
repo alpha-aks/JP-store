@@ -275,7 +275,7 @@ function Footer() {
             </div>
 
             {/* Bottom Copyright Bar */}
-            <div className="w-full border-t border-white/10 bg-black/30 py-5">
+            <div className="w-full border-t border-white/10 bg-black/30 py-5 pb-24 lg:pb-5">
                 <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-3">
                     <p>© {new Date().getFullYear()} JP Store. All rights reserved. Crafted with pride for Gundala.</p>
                     <div className="flex items-center gap-4 text-xs text-gray-400">

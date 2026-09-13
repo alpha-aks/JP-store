@@ -11,11 +11,11 @@ function ProductCard({data}) {
     const url = `products-list/${validURLConvertor(data.name)}-${data._id}`;
 
     return (
-        <Link to={url} className='border py-2 lg:p-4 grid gap-1 lg:gap-3 min-w-36 lg:min-w-52 rounded cursor-pointer bg-white border-gray-200 relative'>
+        <Link to={url} className='border p-2.5 sm:p-3 lg:p-4 grid gap-1.5 lg:gap-3 min-w-[145px] sm:min-w-40 lg:min-w-52 rounded-xl cursor-pointer bg-white border-gray-200 relative shadow-xs hover:shadow-md transition-shadow shrink-0'>
             
             {
                 data.discount > 0 && (
-                    <div className="absolute left-3 w-8 h-8 flex items-center justify-center">
+                    <div className="absolute left-2.5 top-2.5 w-8 h-8 flex items-center justify-center z-10">
                         <img src={disscountBannerSVG} alt="discount" className="w-full h-full absolute"/>
                         <div className="absolute flex flex-col items-center justify-center text-white text-[10px] font-bold">
                             <span>{data.discount}%</span>
@@ -25,11 +25,11 @@ function ProductCard({data}) {
                 )
             }
 
-            <div className='h-25 rounded'>
+            <div className='h-25 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50/50'>
                 <img 
                     src={data.image[0]} 
                     alt={data.name}
-                    className="w-full h-full object-scale-down scale-120"
+                    className="w-full h-full object-contain p-1"
                 />
             </div>
             <div className='p-1 rounded w-fit flex bg-[#F8F8F8] items-center justify-center mt-2'>

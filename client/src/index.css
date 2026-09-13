@@ -10,6 +10,22 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll; /* Prevents mobile Safari rendering stutters */
+    }
+}
+
+.scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
 }
 
 .no-scrollbar {
