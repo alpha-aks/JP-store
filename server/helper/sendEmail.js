@@ -12,8 +12,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const sendEmail = async ({ sendTo, subject, html }) => {
     try {
         console.log(`\n📧 [EMAIL DISPATCH] To: ${sendTo} | Subject: ${subject}`);
+        const fromAddress = process.env.RESEND_FROM_EMAIL || 'Jp Store <support@jpenterprise.store>';
         const { data, error } = await resend.emails.send({
-            from: 'Jp Store <no-reply@nishant.one>',
+            from: fromAddress,
             to: sendTo,
             subject: subject,
             html: html,

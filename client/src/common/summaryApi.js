@@ -1,10 +1,25 @@
 export const getBaseURL = () => {
+    // 1. Explicit environment variable takes precedence
+    if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) {
+        return import.meta.env.VITE_API_URL.replace(/\/$/, "");
+    }
+
     if (typeof window !== "undefined" && window.location.hostname) {
-        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-            return `${window.location.protocol}//${window.location.hostname}:8080`;
+        const host = window.location.hostname;
+
+        // 2. Production domains: same-origin API (e.g., https://www.jpenterprise.store or Vercel preview)
+        if (host.includes("jpenterprise.store") || host.endsWith(".vercel.app")) {
+            return window.location.origin;
+        }
+
+        // 3. Local LAN IP for mobile device testing on local network (e.g., 192.168.x.x)
+        if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) {
+            return `${window.location.protocol}//${host}:8080`;
         }
     }
-    return import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+    // 4. Default for localhost desktop development
+    return "http://localhost:8080";
 };
 
 export const baseURL = getBaseURL();

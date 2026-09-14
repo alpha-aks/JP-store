@@ -20,9 +20,15 @@ const app = express()
 
 const allowedOrigins = [
     process.env.CLIENT_URL,
+    "https://www.jpenterprise.store",
+    "https://jpenterprise.store",
+    "http://www.jpenterprise.store",
+    "http://jpenterprise.store",
     "http://localhost:5173",
     "http://localhost:5174",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://nishant.one",
+    "https://www.nishant.one"
 ].filter(Boolean).flatMap(url => [url.replace(/\/$/, ""), url]);
 
 app.use(cors({
@@ -34,6 +40,7 @@ app.use(cors({
         const isAllowed =
             allowedOrigins.includes(cleanOrigin) ||
             process.env.CLIENT_URL?.split(",").map(u => u.trim().replace(/\/$/, "")).includes(cleanOrigin) ||
+            /jpenterprise\.store$/.test(cleanOrigin) ||
             /\.vercel\.app$/.test(cleanOrigin) ||
             /\.netlify\.app$/.test(cleanOrigin) ||
             /nishant\.one$/.test(cleanOrigin) ||

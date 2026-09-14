@@ -10,8 +10,17 @@ const Axios = axios.create({
 //sending access token in header
 Axios.interceptors.request.use(
     async (config) => {
-        if (typeof window !== "undefined" && window.location.hostname && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-            config.baseURL = `${window.location.protocol}//${window.location.hostname}:8080`;
+        if (typeof window !== "undefined" && window.location.hostname) {
+            const host = window.location.hostname;
+            if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) {
+                config.baseURL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+            } else if (host.includes("jpenterprise.store") || host.endsWith(".vercel.app")) {
+                config.baseURL = window.location.origin;
+            } else if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) {
+                config.baseURL = `${window.location.protocol}//${host}:8080`;
+            } else {
+                config.baseURL = baseURL;
+            }
         }
 
         const accessToken = localStorage.getItem("accessToken")

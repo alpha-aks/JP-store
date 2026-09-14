@@ -198,7 +198,7 @@ function Footer() {
                             </div>
                             <div className="flex items-center gap-2.5">
                                 <FaEnvelope className="text-[#f37023] shrink-0" size={13} />
-                                <span>support@jpstore.in</span>
+                                <span>support@jpenterprise.store</span>
                             </div>
                         </div>
 
