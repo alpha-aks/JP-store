@@ -650,7 +650,7 @@ export const resetPasswordController = async (req, res) => {
             html: resetPasswordConfirmationTemplate({
                 name: updatedUser.name,
                 email: updatedUser.email,
-                supportEmail: process.env.SUPPORT_EMAIL || "support@jpenterprise.store"
+                supportEmail: process.env.SUPPORT_EMAIL || "support@Nishant.one"
             })
         })
 

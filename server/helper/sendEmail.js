@@ -4,15 +4,22 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY is missing in .env file");
+    console.error("⚠️ RESEND_API_KEY is missing in environment variables. Emails will not send.");
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const sendEmail = async ({ sendTo, subject, html }) => {
+    if (!resend) {
+        console.error("❌ Cannot send email: RESEND_API_KEY is not configured.");
+        return null;
+    }
+
     try {
         console.log(`\n📧 [EMAIL DISPATCH] To: ${sendTo} | Subject: ${subject}`);
-        const fromAddress = process.env.RESEND_FROM_EMAIL || 'Jp Store <support@jpenterprise.store>';
+        
+        const fromAddress = process.env.RESEND_FROM_EMAIL || 'Jp Store <no-reply@nishant.one>';
+
         const { data, error } = await resend.emails.send({
             from: fromAddress,
             to: sendTo,
