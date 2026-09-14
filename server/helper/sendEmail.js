@@ -18,35 +18,22 @@ const sendEmail = async ({ sendTo, subject, html }) => {
     try {
         console.log(`\n📧 [EMAIL DISPATCH] To: ${sendTo} | Subject: ${subject}`);
         
-        const configuredFrom = process.env.RESEND_FROM_EMAIL;
-        const primaryFrom = configuredFrom || 'Jp Store <support@jpenterprise.store>';
-        const verifiedFallbackFrom = 'Jp Store <no-reply@nishant.one>';
+        const fromAddress = process.env.RESEND_FROM_EMAIL || 'Jp Store <no-reply@nishant.one>';
 
-        let result = await resend.emails.send({
-            from: primaryFrom,
+        const { data, error } = await resend.emails.send({
+            from: fromAddress,
             to: sendTo,
             subject: subject,
             html: html,
         });
 
-        // If domain is not verified on Resend yet, failover to verified domain so mails are never blocked
-        if (result.error && (result.error.message?.includes("not verified") || result.error.statusCode === 403)) {
-            console.warn(`⚠️ Sender "${primaryFrom}" not verified on Resend yet. Automatically falling back to verified domain "${verifiedFallbackFrom}"...`);
-            result = await resend.emails.send({
-                from: verifiedFallbackFrom,
-                to: sendTo,
-                subject: subject,
-                html: html,
-            });
-        }
-
-        if (result.error) {
-            console.error("❌ Resend error:", result.error);
+        if (error) {
+            console.error("❌ Resend error:", error);
             return null;
         }
 
-        console.log("✅ Email sent successfully via Resend. ID:", result.data?.id);
-        return result.data;
+        console.log("✅ Email sent successfully via Resend. ID:", data?.id);
+        return data;
     } catch (error) {
         console.error("❌ Error sending email:", error);
         return null;
