@@ -9,6 +9,7 @@ import toast from "react-hot-toast"
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
 import { userCart } from "../provider/CartContext";
+import order_photo from "../assets/order_photo.webp";
 
 function CheckOut() {
 
@@ -319,32 +320,35 @@ function CheckOut() {
                     </div>
                     <div className="h-[50vh] overflow-y-auto">
                         {
-                            cartItem.map((item, index) => (
-                                <div key={index} className="px-7 py-5 border border-gray-200 flex items-center gap-5">
-                                    <p>{item.quantity}</p>
-                                    <img src={item.productId.image[0]} alt="" className="w-15 h-15" />
-                                    <div className="text-xs flex flex-col gap-1">
-                                        <p className="line-clamp-1">{item.productId.name}</p>
-                                        <div>
-                                            <p>{item.productId.unit}</p>
-                                            {
-                                                item?.productId.discount > 0 ? (
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="text-[11px] font-bold line-through text-gray-500">
-                                                            &#8377;{item?.productId.price}
-                                                        </span>
-                                                        <span className="text-[11px] font-bold text-gray-700">
-                                                            &#8377;{(item?.productId.price - (item?.productId.price * item?.productId.discount / 100)).toFixed(2)}
-                                                        </span>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-[11px] font-bold text-gray-700">&#8377;{item?.productId.price}</span>
-                                                )
-                                            }
+                            cartItem?.map((item, index) => {
+                                const product = item?.productId;
+                                return (
+                                    <div key={index} className="px-7 py-5 border border-gray-200 flex items-center gap-5">
+                                        <p>{item?.quantity || 1}</p>
+                                        <img src={product?.image?.[0] || order_photo} alt={product?.name || "Product"} className="w-15 h-15 object-contain" />
+                                        <div className="text-xs flex flex-col gap-1">
+                                            <p className="line-clamp-1">{product?.name || "Item unavailable"}</p>
+                                            <div>
+                                                <p>{product?.unit || ""}</p>
+                                                {
+                                                    product?.discount > 0 ? (
+                                                        <div className="flex items-center gap-1">
+                                                            <span className="text-[11px] font-bold line-through text-gray-500">
+                                                                &#8377;{product?.price}
+                                                            </span>
+                                                            <span className="text-[11px] font-bold text-gray-700">
+                                                                &#8377;{(product?.price - (product?.price * product?.discount / 100)).toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-[11px] font-bold text-gray-700">&#8377;{product?.price || 0}</span>
+                                                    )
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         }
                     </div>
                     <button

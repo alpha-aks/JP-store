@@ -42,10 +42,10 @@ function Header({ setIsCartMenuOpen }) {
         //     priceCount += discountedPrice * item.quantity;
         // }
         itemsCount = cartItem.reduce((prev, curr) => {
-            return prev + curr.quantity;
+            return prev + (curr.quantity || 0);
         }, 0)
         priceCount = parseFloat(cartItem.reduce((prev, curr) => {
-            return prev + curr.productId.price * (1 - curr.productId.discount / 100) * curr.quantity;
+            return prev + (curr.productId ? (curr.productId.price * (1 - (curr.productId.discount || 0) / 100) * (curr.quantity || 0)) : 0);
         }, 0).toFixed(2));
 
         setTotalItems(itemsCount);

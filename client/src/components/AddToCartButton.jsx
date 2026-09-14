@@ -19,11 +19,11 @@ function AddToCartButton({ data }) {
 
     //checking this item in cart or not
     useEffect(() => {
-        const checkItemInCart = cartItem.some(item => item.productId._id === data._id)
+        const checkItemInCart = cartItem.some(item => item?.productId?._id === data?._id)
         setIsItemAvailableInCart(checkItemInCart)
 
-        const product = cartItem.find(item => item.productId._id === data._id)
-        setQty(product?.quantity)
+        const product = cartItem.find(item => item?.productId?._id === data?._id)
+        setQty(product?.quantity || 0)
         setCartItemsDetails(product)
     }, [data, cartItem])
 

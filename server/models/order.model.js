@@ -58,6 +58,14 @@ const orderSchema = new mongoose.Schema({
     },
     delivery_time: {
         type: Number,
+    },
+    delivery_otp: {
+        type: String,
+        default: null
+    },
+    delivery_otp_expiry: {
+        type: Date,
+        default: null
     }
 }, {
     timestamps: true

@@ -54,7 +54,16 @@ const Login = ({ setIsLoginOpen, setIsRegister }) => {
                 navigate("/");
             }
         } catch (error) {
-            AxiosToastError(error);
+            if (error?.response?.data?.needVerification) {
+                toast.error(error.response.data.message || "Please verify your email OTP before logging in.");
+                if (setIsRegister) {
+                    setTimeout(() => {
+                        setIsRegister(true);
+                    }, 1200);
+                }
+            } else {
+                AxiosToastError(error);
+            }
         } finally {
             setLoading(false);
         }

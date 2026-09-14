@@ -10,7 +10,9 @@ import {
     uploadAvatar, 
     userDetailsController, 
     verifyForgotPasswordOTPController, 
-    verifyUserController 
+    verifyUserController,
+    verifyRegisterOtpController,
+    resendRegisterOtpController
 } from "../controllers/user.controller.js"
 import authMiddleware from "../middleware/authMiddleware.js"
 import upload from "../middleware/multer.js"
@@ -18,6 +20,8 @@ import upload from "../middleware/multer.js"
 const userRoutes = Router()
 
 userRoutes.post("/register", registerUserController)
+userRoutes.post("/verify-register-otp", verifyRegisterOtpController)
+userRoutes.post("/resend-register-otp", resendRegisterOtpController)
 userRoutes.post("/verify-email", verifyUserController)
 userRoutes.post("/login", loginUserController)
 userRoutes.get("/logout", authMiddleware, logoutController)

@@ -167,12 +167,12 @@ function MyOrders() {
                                     </button>
                                 </div>
                                 <div className="flex gap-2 overflow-x-scroll ">
-                                    {order.itemList.map((item, index) => (
+                                    {order.itemList?.map((item, index) => (
                                         <img
-                                            src={item.productId.image[0]}
-                                            alt={item.productId.name}
+                                            src={item?.productId?.image?.[0] || order_photo}
+                                            alt={item?.productId?.name || "Order Item"}
                                             key={index}
-                                            className="w-20 h-20 px-1 py-2 border border-gray-300 rounded-lg"
+                                            className="w-20 h-20 px-1 py-2 border border-gray-300 rounded-lg object-contain"
                                         />
                                     ))}
                                 </div>

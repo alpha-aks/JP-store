@@ -8,6 +8,7 @@ import { GiScooter } from "react-icons/gi";
 import waves from "../assets/waves.svg"
 import feeding_india_icon_v6 from "../assets/feeding_india_icon_v6.webp"
 import empty_cart from "../assets/empty_cart.webp"
+import order_photo from "../assets/order_photo.webp"
 import { userCart } from "../provider/CartContext";
 import AddToCartButton from "../components/AddToCartButton";
 import { FaChevronRight } from "react-icons/fa6";
@@ -56,17 +57,17 @@ function ViewCart() {
         let priceCountWithDiscount = 0;
         let priceCountWithOutDiscount = 0;
 
-        itemsCount = cartItem.reduce((prev, curr) => prev + curr.quantity, 0);
+        itemsCount = cartItem.reduce((prev, curr) => prev + (curr.quantity || 0), 0);
 
         priceCountWithDiscount = parseFloat(
             cartItem.reduce((prev, curr) =>
-                prev + curr.productId.price * (1 - curr.productId.discount / 100) * curr.quantity, 0
+                prev + (curr.productId ? (curr.productId.price * (1 - (curr.productId.discount || 0) / 100) * (curr.quantity || 0)) : 0), 0
             ).toFixed(2)
         );
 
         priceCountWithOutDiscount = parseFloat(
             cartItem.reduce((prev, curr) =>
-                prev + curr.productId.price * curr.quantity, 0
+                prev + (curr.productId ? (curr.productId.price * (curr.quantity || 0)) : 0), 0
             ).toFixed(2)
         );
 
@@ -135,25 +136,25 @@ function ViewCart() {
                                                 <div className="flex justify-between" key={index}>
                                                     <div className="flex gap-2">
                                                         <img
-                                                            src={item?.productId?.image[0]}
-                                                            alt={item?.productId?.name}
-                                                            className="w-18 h-18 p-1 border-1 border-gray-200 rounded-xl"
+                                                            src={item?.productId?.image?.[0] || order_photo}
+                                                            alt={item?.productId?.name || "Product"}
+                                                            className="w-18 h-18 p-1 border-1 border-gray-200 rounded-xl object-contain"
                                                         />
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm line-clamp-2">{item?.productId?.name}</span>
-                                                            <span className="text-xs">{item?.productId?.unit}</span>
+                                                            <span className="text-sm line-clamp-2">{item?.productId?.name || "Item unavailable"}</span>
+                                                            <span className="text-xs">{item?.productId?.unit || ""}</span>
                                                             {
-                                                                item?.productId.discount > 0 ? (
+                                                                (item?.productId?.discount || 0) > 0 ? (
                                                                     <div className="flex items-center gap-1">
                                                                         <span className="text-[11px] font-bold line-through text-gray-500">
-                                                                            &#8377;{item?.productId.price}
+                                                                            &#8377;{item?.productId?.price}
                                                                         </span>
                                                                         <span className="text-[11px] font-bold text-black">
-                                                                            &#8377;{(item?.productId.price - (item?.productId.price * item?.productId.discount / 100)).toFixed(2)}
+                                                                            &#8377;{(item?.productId?.price - (item?.productId?.price * item?.productId?.discount / 100)).toFixed(2)}
                                                                         </span>
                                                                     </div>
                                                                 ) : (
-                                                                    <span className="text-[11px] font-bold">&#8377;{item?.productId.price}</span>
+                                                                    <span className="text-[11px] font-bold">&#8377;{item?.productId?.price || 0}</span>
                                                                 )
                                                             }
                                                         </div>
@@ -184,7 +185,7 @@ function ViewCart() {
                                                 }
                                             </div>
                                             <div className="flex gap-1 text-xs">
-                                                {cartItem.some(item => item.productId.discount > 0) && (
+                                                {cartItem.some(item => (item?.productId?.discount || 0) > 0) && (
                                                     <span className="text-gray-700 line-through">&#8377;{totalPriceWithOutDiscount}</span>
                                                 )}
                                                 <span className="font-semibold">&#8377;{totalPriceWithDiscount}</span>

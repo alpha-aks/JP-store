@@ -29,6 +29,7 @@ import Cancel from "../pages/Cancel"
 import OrderDetails from "../pages/OrderDetails"
 import AddNewAddressManually from "../components/AddNewAddressManually"
 import EditAddressManually from "../components/EditAddressManually"
+import AdminPortal from "../pages/AdminPortal"
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
             {
                 path: "",
                 element: <Home />
+            },
+            {
+                path: "admin",
+                element: <AdminPortal />
             },
             {
                 path: "search",

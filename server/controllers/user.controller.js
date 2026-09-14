@@ -9,6 +9,7 @@ import dotenv from "dotenv"
 import generateOTP from "../utils/generateOTP.js";
 import forgotPasswordEmailTemplate from "../utils/forgotPasswordEmailTemplate.js";
 import resetPasswordConfirmationTemplate from "../utils/resetPasswordConfirmationTemplate.js";
+import registrationOtpEmailTemplate from "../utils/registrationOtpEmailTemplate.js";
 import jwt from "jsonwebtoken"
 import deleteImgCloudinary from "../utils/deleteImgCloudinary.js";
 
@@ -27,12 +28,17 @@ export const registerUserController = async (req, res) => {
             });
         }
 
-        const existingUser = await UserModel.findOne({ $or: [{ email }, { mobile }] });
+        const normalizedEmail = email.toLowerCase().trim();
 
-        if (existingUser) {
+        // Check if user already exists
+        const existingUser = await UserModel.findOne({
+            $or: [{ email: normalizedEmail }, { mobile }]
+        });
+
+        if (existingUser && existingUser.verify_email) {
             return res.status(400).json({
-                message: existingUser.email === email
-                    ? "Email is already registered!"
+                message: existingUser.email === normalizedEmail
+                    ? "Email is already registered! Please log in."
                     : "Mobile number is already registered!",
                 error: true,
                 success: false
@@ -40,55 +46,189 @@ export const registerUserController = async (req, res) => {
         }
 
         const hashedPassword = await hashPassword(password);
+        const otp = generateOTP();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-        const newUser = new UserModel({
-            name,
-            email,
-            password: hashedPassword,
-            mobile
-        });
+        let userToVerify;
 
-        const savedUser = await newUser.save();
+        if (existingUser && !existingUser.verify_email) {
+            // User exists but has not verified email yet - update their details and new OTP
+            existingUser.name = name;
+            existingUser.password = hashedPassword;
+            existingUser.mobile = mobile;
+            existingUser.email_verify_otp = String(otp);
+            existingUser.email_verify_otp_expiry = otpExpiry;
+            userToVerify = await existingUser.save();
+        } else {
+            // Create new unverified user
+            const newUser = new UserModel({
+                name,
+                email: normalizedEmail,
+                password: hashedPassword,
+                mobile,
+                verify_email: false,
+                email_verify_otp: String(otp),
+                email_verify_otp_expiry: otpExpiry
+            });
+            userToVerify = await newUser.save();
+        }
 
-        const verifyEmailURL = `${process.env.CLIENT_URL}/verify-email?code=${savedUser._id}`;
-
+        // Send OTP email
         await sendEmail({
-            sendTo: email,
-            subject: "Verification Email from Jp store",
-            html: verificationEmailTemplate({
-                name: savedUser.name,
-                url: verifyEmailURL,
+            sendTo: normalizedEmail,
+            subject: "Verify Your Email - JP Store Registration Code",
+            html: registrationOtpEmailTemplate({
+                name: userToVerify.name,
+                otp: otp
             }),
         });
 
-        // Auto-login after successful registration
-        const accessToken = await generateAccessToken(savedUser._id);
-        const refreshToken = await generateRefreshToken(savedUser._id);
-
-        const cookiesOption = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None"
-        };
-
-        res.cookie("accessToken", accessToken, cookiesOption);
-        res.cookie("refreshToken", refreshToken, cookiesOption);
-
-        return res.status(201).json({
-            message: "User registered successfully and logged in.",
+        return res.status(200).json({
+            message: "Verification OTP sent to your email! Please enter it to complete registration.",
             error: false,
             success: true,
-            data: {
-                user: savedUser,
-                accessToken,
-                refreshToken
-            }
+            email: normalizedEmail
         });
 
     } catch (error) {
-        // console.error("Error in registerUserController:", error);
+        console.error("Error in registerUserController:", error);
         return res.status(500).json({
-            message: "Internal server error.",
+            message: error.message || "Internal server error.",
+            error: true,
+            success: false
+        });
+    }
+};
+
+// Verify registration OTP
+export const verifyRegisterOtpController = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                message: "Email and 6-digit OTP are required.",
+                error: true,
+                success: false
+            });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await UserModel.findOne({ email: normalizedEmail });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "No registration found with this email.",
+                error: true,
+                success: false
+            });
+        }
+
+        if (user.verify_email) {
+            return res.status(200).json({
+                message: "Email is already verified! You can log in.",
+                error: false,
+                success: true
+            });
+        }
+
+        if (!user.email_verify_otp || user.email_verify_otp !== String(otp).trim()) {
+            return res.status(400).json({
+                message: "Invalid OTP! Please check your email and try again.",
+                error: true,
+                success: false
+            });
+        }
+
+        const currentTime = new Date();
+        if (new Date(user.email_verify_otp_expiry) < currentTime) {
+            return res.status(400).json({
+                message: "Verification OTP has expired. Please request a new OTP.",
+                error: true,
+                success: false
+            });
+        }
+
+        // Mark verified and clear OTP
+        user.verify_email = true;
+        user.email_verify_otp = null;
+        user.email_verify_otp_expiry = null;
+        await user.save();
+
+        return res.status(200).json({
+            message: "Email verified successfully! You can now log in.",
+            error: false,
+            success: true
+        });
+
+    } catch (error) {
+        console.error("Error in verifyRegisterOtpController:", error);
+        return res.status(500).json({
+            message: error.message || "Internal server error.",
+            error: true,
+            success: false
+        });
+    }
+};
+
+// Resend registration OTP
+export const resendRegisterOtpController = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                message: "Email is required.",
+                error: true,
+                success: false
+            });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await UserModel.findOne({ email: normalizedEmail });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "No account found with this email.",
+                error: true,
+                success: false
+            });
+        }
+
+        if (user.verify_email) {
+            return res.status(400).json({
+                message: "Email is already verified! Please log in directly.",
+                error: true,
+                success: false
+            });
+        }
+
+        const otp = generateOTP();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+        user.email_verify_otp = String(otp);
+        user.email_verify_otp_expiry = otpExpiry;
+        await user.save();
+
+        await sendEmail({
+            sendTo: normalizedEmail,
+            subject: "Your New Verification OTP - JP Store",
+            html: registrationOtpEmailTemplate({
+                name: user.name,
+                otp: otp
+            }),
+        });
+
+        return res.status(200).json({
+            message: "A new verification code has been sent to your email.",
+            error: false,
+            success: true
+        });
+
+    } catch (error) {
+        console.error("Error in resendRegisterOtpController:", error);
+        return res.status(500).json({
+            message: error.message || "Internal server error.",
             error: true,
             success: false
         });
@@ -154,11 +294,21 @@ export const loginUserController = async (req, res) => {
         }
 
         if (user.status !== "Active") {
-            return res.satus(400).json({
+            return res.status(400).json({
                 message: `Your account is ${user.status}, Please contact to admin!`,
                 error: true,
                 success: false
             })
+        }
+
+        if (!user.verify_email) {
+            return res.status(400).json({
+                message: "Your email is not verified. Please verify your email with the OTP before logging in.",
+                error: true,
+                success: false,
+                needVerification: true,
+                email: user.email
+            });
         }
 
         const isPasswordMatch = await comparePasswords(password, user.password);

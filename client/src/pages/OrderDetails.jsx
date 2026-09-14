@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoMdCopy } from "react-icons/io";
 import { format } from "date-fns";
+import order_photo from "../assets/order_photo.webp";
 
 function OrderDetails() {
     const navigate = useNavigate();
@@ -78,17 +79,17 @@ function OrderDetails() {
         let totalAmountWithoutDiscount = 0;
         let totalAmountWithDiscount = 0;
     
-        itemList.forEach(item => {
-            const price = item.productId.price;
-            const discount = item.productId.discount || 0; // If discount is null, consider it as 0
-            const quantity = item.quantity;
+        (itemList || []).forEach(item => {
+            const price = item?.productId?.price || 0;
+            const discount = item?.productId?.discount || 0; // If discount is null, consider it as 0
+            const quantity = item?.quantity || 1;
     
             totalAmountWithoutDiscount += price * quantity;
             totalAmountWithDiscount += price * quantity * (1 - discount / 100);
         });
     
-            setTotalAmountWithoutDiscount(totalAmountWithoutDiscount),
-            setTotalAmountWithDiscount(totalAmountWithDiscount)
+        setTotalAmountWithoutDiscount(totalAmountWithoutDiscount);
+        setTotalAmountWithDiscount(totalAmountWithDiscount);
     }
 
     const calcOtherCharge = () => {
@@ -162,22 +163,32 @@ function OrderDetails() {
                                 {/* Products */}
                                 <div className="flex flex-col gap-3 mt-3">
                                     {
-                                        orderData?.itemList.map((item, index) => (
-                                            <div key={index} className="flex justify-between">
-                                                <div className="flex gap-3 items-center">
-                                                    <img src={item.productId.image[0]} alt="" className="w-15 h-15 p-1 border border-gray-300 rounded-xl" />
-                                                    <div>
-                                                        <p className="text-xs font-semibold line-clamp-1">{item.productId.name}</p>
-                                                        <p className="text-xs text-[#666666]">
-                                                            {formatUnit(item.productId.unit)} x {item.quantity}
-                                                        </p>
+                                        orderData?.itemList?.map((item, index) => {
+                                            const product = item?.productId;
+                                            const price = product?.price || 0;
+                                            const discount = product?.discount || 0;
+                                            const finalPrice = (price - (price * discount / 100)).toFixed(2);
+                                            return (
+                                                <div key={index} className="flex justify-between items-center">
+                                                    <div className="flex gap-3 items-center">
+                                                        <img 
+                                                            src={product?.image?.[0] || order_photo} 
+                                                            alt={product?.name || "Product"} 
+                                                            className="w-15 h-15 p-1 border border-gray-300 rounded-xl object-contain" 
+                                                        />
+                                                        <div>
+                                                            <p className="text-xs font-semibold line-clamp-1">{product?.name || "Item unavailable"}</p>
+                                                            <p className="text-xs text-[#666666]">
+                                                                {product?.unit ? formatUnit(product.unit) : "1 Unit"} x {item?.quantity || 1}
+                                                            </p>
+                                                        </div>
                                                     </div>
+                                                    <p className="text-xs font-bold">
+                                                        &#8377;{finalPrice}
+                                                    </p>
                                                 </div>
-                                                <p className="text-xs font-bold">
-                                                    &#8377;{item.productId.price - (item.productId.price * item.productId.discount / 100)}
-                                                </p>
-                                            </div>
-                                        ))
+                                            );
+                                        })
                                     }
                                 </div>
                             </div>

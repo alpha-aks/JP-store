@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import CartProductModel from "../models/cartProduct.model.js";
 import razorpayInstance from "../utils/razorpayConfig.js";
 import crypto from "crypto";
+import sendEmail from "../helper/sendEmail.js";
+import generateOTP from "../utils/generateOTP.js";
+import deliveryOtpEmailTemplate from "../utils/deliveryOtpEmailTemplate.js";
 
 dotenv.config(); // Load environment variables
 export const createCashOnDeliveryOrderController = async (req, res) => {
@@ -56,8 +59,8 @@ export const createCashOnDeliveryOrderController = async (req, res) => {
 
 
         const filteredItems = itemList.map(item => ({
-            productId: item.productId._id, // Extract product ID
-            quantity: item.quantity // Keep quantity
+            productId: item?.productId?._id || item?.productId, // Extract product ID
+            quantity: item?.quantity || 1 // Keep quantity
         }));
 
         const minutes = Math.floor(Math.random() * (20 - 6 + 1)) + 6;
@@ -430,6 +433,16 @@ export const updateOrderStatusController = async (req, res) => {
             });
         }
 
+        // If attempting to mark as Delivered directly, reject and require OTP flow
+        if (order_status === "Delivered") {
+            return res.status(400).json({
+                message: "Delivery OTP verification is mandatory before marking an order as Delivered.",
+                success: false,
+                error: true,
+                requiresOtp: true
+            });
+        }
+
         // Update order status
         order.order_status = order_status;
         await order.save();
@@ -496,3 +509,204 @@ export const getOrderDetailsByIdCOntroller = async (req, res) => {
         })
     }
 }
+
+// Send Delivery OTP to customer email (Admin action)
+export const sendDeliveryOtpController = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { orderId } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Please log in to access this endpoint.",
+                success: false,
+                error: true
+            });
+        }
+
+        const user = await UserModel.findById(userId).lean();
+        if (!user || user.role.toLowerCase() !== "admin") {
+            return res.status(403).json({
+                message: "Only admins can send delivery OTPs.",
+                success: false,
+                error: true
+            });
+        }
+
+        if (!orderId) {
+            return res.status(400).json({
+                message: "orderId is required.",
+                success: false,
+                error: true
+            });
+        }
+
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(orderId);
+        const order = await OrderModel.findOne({
+            $or: [
+                ...(isObjectId ? [{ _id: orderId }] : []),
+                { orderId: orderId }
+            ]
+        }).populate("userId", "name email mobile");
+
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found.",
+                success: false,
+                error: true
+            });
+        }
+
+        if (order.order_status === "Delivered") {
+            return res.status(400).json({
+                message: "Order is already marked as Delivered.",
+                success: false,
+                error: true
+            });
+        }
+
+        const customerEmail = order.userId?.email;
+        if (!customerEmail) {
+            return res.status(400).json({
+                message: "Customer email not found for this order.",
+                success: false,
+                error: true
+            });
+        }
+
+        const otp = generateOTP();
+        const otpExpiry = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+        order.delivery_otp = String(otp);
+        order.delivery_otp_expiry = otpExpiry;
+        await order.save();
+
+        await sendEmail({
+            sendTo: customerEmail,
+            subject: `Delivery OTP for Order #${order.orderId} - JP Store`,
+            html: deliveryOtpEmailTemplate({
+                customerName: order.userId?.name || "Valued Customer",
+                orderId: order.orderId,
+                otp: otp,
+                totalAmt: order.totalAmt
+            })
+        });
+
+        // Mask email for display in admin panel
+        const [userPart, domainPart] = customerEmail.split("@");
+        const maskedEmail = userPart.length > 2 
+            ? `${userPart[0]}***${userPart[userPart.length - 1]}@${domainPart}`
+            : customerEmail;
+
+        return res.status(200).json({
+            message: `Delivery OTP sent to customer's email (${maskedEmail}).`,
+            success: true,
+            error: false,
+            customerEmail: maskedEmail,
+            customerName: order.userId?.name,
+            orderId: order.orderId
+        });
+
+    } catch (error) {
+        console.error("Error sending delivery OTP:", error);
+        return res.status(500).json({
+            message: error.message || "Failed to send delivery OTP",
+            success: false,
+            error: true
+        });
+    }
+};
+
+// Verify Delivery OTP and mark order as Delivered (Admin action)
+export const verifyDeliveryOtpController = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { orderId, otp } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Please log in to access this endpoint.",
+                success: false,
+                error: true
+            });
+        }
+
+        const user = await UserModel.findById(userId).lean();
+        if (!user || user.role.toLowerCase() !== "admin") {
+            return res.status(403).json({
+                message: "Only admins can verify delivery OTPs.",
+                success: false,
+                error: true
+            });
+        }
+
+        if (!orderId || !otp) {
+            return res.status(400).json({
+                message: "Order ID and 6-digit Delivery OTP are required.",
+                success: false,
+                error: true
+            });
+        }
+
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(orderId);
+        const order = await OrderModel.findOne({
+            $or: [
+                ...(isObjectId ? [{ _id: orderId }] : []),
+                { orderId: orderId }
+            ]
+        }).populate("userId", "name email");
+
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found.",
+                success: false,
+                error: true
+            });
+        }
+
+        if (order.order_status === "Delivered") {
+            return res.status(200).json({
+                message: "Order is already marked as Delivered.",
+                success: true,
+                order
+            });
+        }
+
+        if (!order.delivery_otp || order.delivery_otp !== String(otp).trim()) {
+            return res.status(400).json({
+                message: "Invalid delivery OTP! Please ask customer for the correct code.",
+                success: false,
+                error: true
+            });
+        }
+
+        const currentTime = new Date();
+        if (new Date(order.delivery_otp_expiry) < currentTime) {
+            return res.status(400).json({
+                message: "Delivery OTP has expired. Please send a new OTP.",
+                success: false,
+                error: true
+            });
+        }
+
+        order.order_status = "Delivered";
+        order.delivery_otp = null;
+        order.delivery_otp_expiry = null;
+        await order.save();
+
+        return res.status(200).json({
+            message: "Delivery OTP verified successfully! Order marked as Delivered.",
+            success: true,
+            error: false,
+            order
+        });
+
+    } catch (error) {
+        console.error("Error verifying delivery OTP:", error);
+        return res.status(500).json({
+            message: error.message || "Failed to verify delivery OTP",
+            success: false,
+            error: true
+        });
+    }
+};

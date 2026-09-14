@@ -181,6 +181,22 @@ const summaryApi = {
         url: "/api/order/get-order-details-by-id",
         method: "post"
     },
+    verifyRegisterOtp: {
+        url: "/api/user/verify-register-otp",
+        method: "post"
+    },
+    resendRegisterOtp: {
+        url: "/api/user/resend-register-otp",
+        method: "post"
+    },
+    sendDeliveryOtp: {
+        url: "/api/order/send-delivery-otp",
+        method: "post"
+    },
+    verifyDeliveryOtp: {
+        url: "/api/order/verify-delivery-otp",
+        method: "post"
+    },
 }
 
 export default summaryApi

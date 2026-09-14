@@ -7,7 +7,9 @@ import {
     getOrdersController,
     razorpayPaymentOrderController,
     razorpayPaymentVerification,
-    updateOrderStatusController
+    updateOrderStatusController,
+    sendDeliveryOtpController,
+    verifyDeliveryOtpController
 } from "../controllers/order.controller.js";
 
 const orderRouters = Router()
@@ -19,5 +21,7 @@ orderRouters.put("/update-order-status-admin", authMiddleware, updateOrderStatus
 orderRouters.post("/add-razor-payment-checkout", authMiddleware, razorpayPaymentOrderController)
 orderRouters.post("/razorpay-payment-verification", razorpayPaymentVerification);
 orderRouters.post("/get-order-details-by-id", authMiddleware, getOrderDetailsByIdCOntroller)
+orderRouters.post("/send-delivery-otp", authMiddleware, sendDeliveryOtpController)
+orderRouters.post("/verify-delivery-otp", authMiddleware, verifyDeliveryOtpController)
 
 export default orderRouters
