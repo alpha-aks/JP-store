@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import AxiosToastError from "../utils/AxiosToastError";
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
+import { setAllCategory } from "../store/productSlice";
 import { FaAngleDown } from "react-icons/fa6";
 import ProductCardForProductListPage from "./ProductCardForProductListPage";
 
 function AllProductsByCategory() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { categoryId } = useParams();
     
     const [loading, setLoading] = useState(true);
@@ -43,8 +45,18 @@ function AllProductsByCategory() {
 
     useEffect(() => {
         fetchProductsByCategory();
-        scrollToTop()
+        scrollToTop();
     }, [categoryId]);
+
+    useEffect(() => {
+        if (!allCategory || allCategory.length === 0) {
+            Axios(summaryApi.getCategory).then(res => {
+                if (res.data?.success && res.data?.data) {
+                    dispatch(setAllCategory(res.data.data));
+                }
+            }).catch(console.error);
+        }
+    }, [dispatch]);
 
     return (
         <section className="lg:px-35 w-full mx-auto mt-3 h-full">

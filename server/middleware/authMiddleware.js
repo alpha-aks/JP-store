@@ -28,9 +28,9 @@ const authMiddleware = async (req, res, next) => {
         next()
 
     } catch (error) {
-        return res.status(500).json({
-            message: "You are not logged in. Please log in to continue.",
-            erros: true,
+        return res.status(401).json({
+            message: error.message || "You are not logged in. Please log in to continue.",
+            error: true,
             success: false
         })
     }

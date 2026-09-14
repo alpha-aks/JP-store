@@ -29,17 +29,19 @@ function ProductViewByCategory({ id, name }) {
                 },
             });
             // console.log(response.data);
-            setData(response.data.data);
+            setData(response.data?.data || []);
         } catch (error) {
-            AxiosToastError(error);
+            console.error("Error fetching category products:", error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchProductsByCategory();
-    }, []);
+        if (id) {
+            fetchProductsByCategory();
+        }
+    }, [id]);
 
     // Scroll Left Function
     const scrollLeft = () => {
@@ -55,8 +57,15 @@ function ProductViewByCategory({ id, name }) {
         }
     };
 
+    const inStockProducts = (data || []).filter(product => product.stock !== 0);
+
+    // Hide entire category section if there are no in-stock products and not loading
+    if (!loading && inStockProducts.length === 0) {
+        return null;
+    }
+
     return (
-        <>
+        <div className="w-full">
             <div className="mx-auto flex justify-between items-center mb-3">
                 <h2 className="font-bold text-lg text-[#0c286e] flex items-center gap-2">
                     <span className="text-[#f37023]">✦</span>
@@ -111,7 +120,7 @@ function ProductViewByCategory({ id, name }) {
                     <FaAngleRight size={16} />
                 </button>
             </div>
-        </>
+        </div>
     );
 }
 

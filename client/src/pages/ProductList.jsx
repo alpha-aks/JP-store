@@ -1,15 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
+import { setAllCategory, setAllSubCategory } from "../store/productSlice";
 import ProductCardForProductListPage from "../components/ProductCardForProductListPage";
 import nothing_here_yet from "../assets/nothing_here_yet.webp";
 
 function ProductList() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { categoryId, subCategoryId } = useParams();
 
     const scrollToTop = () => {
@@ -49,6 +51,24 @@ function ProductList() {
             setLoading(false);
         }
     };
+
+    // Ensure categories & subcategories are populated if user lands directly on this route
+    useEffect(() => {
+        if (!allCategory || allCategory.length === 0) {
+            Axios(summaryApi.getCategory).then(res => {
+                if (res.data?.success && res.data?.data) {
+                    dispatch(setAllCategory(res.data.data));
+                }
+            }).catch(console.error);
+        }
+        if (!allSubCategory || allSubCategory.length === 0) {
+            Axios(summaryApi.getSubCategory).then(res => {
+                if (res.data?.success && res.data?.data) {
+                    dispatch(setAllSubCategory(res.data.data));
+                }
+            }).catch(console.error);
+        }
+    }, [dispatch]);
 
 
     // Fetch subcategories when category changes

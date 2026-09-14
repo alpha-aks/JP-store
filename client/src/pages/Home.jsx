@@ -18,18 +18,29 @@ function Home() {
     useEffect(() => {
         const fetchCategoriesAndSub = async () => {
             try {
+                if (!allCategory || allCategory.length === 0) {
+                    dispatch(setLoadingCategory(true));
+                }
                 const [catRes, subCatRes] = await Promise.all([
                     Axios(summaryApi.getCategory),
                     Axios(summaryApi.getSubCategory)
                 ]);
-                if (catRes.data.success) dispatch(setAllCategory(catRes.data.data));
-                if (subCatRes.data.success) dispatch(setAllSubCategory(subCatRes.data.data));
+                if (catRes.data?.success && catRes.data?.data) {
+                    dispatch(setAllCategory(catRes.data.data));
+                }
+                if (subCatRes.data?.success && subCatRes.data?.data) {
+                    dispatch(setAllSubCategory(subCatRes.data.data));
+                }
             } catch (err) {
-                console.error(err);
+                console.error("Failed to load categories/subcategories:", err);
+            } finally {
+                dispatch(setLoadingCategory(false));
             }
         };
         fetchCategoriesAndSub();
     }, [dispatch]);
+
+    const isCategoryLoading = loadingCategory && (!allCategory || allCategory.length === 0);
 
     const handleRedirectToProductList = (categoryId, categoryName) => {
         const filteredSubCategories = allSubCategory?.filter(subCategory =>
@@ -79,7 +90,7 @@ function Home() {
 
                     {/* Jharokha / Royal Window Category Grid */}
                     <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2.5 sm:gap-3 md:gap-4 justify-center">
-                        {loadingCategory ? (
+                        {isCategoryLoading ? (
                             new Array(10).fill(null).map((_, index) => (
                                 <div
                                     key={index}
@@ -139,9 +150,9 @@ function Home() {
             {/* Display Category Products */}
             <div className="w-full max-w-[1320px] mx-auto my-4 sm:my-6">
                 <div className="w-full space-y-6 sm:space-y-8">
-                    {allCategory.slice(0, 7).map((category, index) => (
+                    {allCategory.map((category, index) => (
                         <ProductViewByCategory
-                            key={index}
+                            key={category?._id || index}
                             id={category?._id}
                             name={category?.name}
                         />
