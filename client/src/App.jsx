@@ -82,38 +82,51 @@ function App() {
 
   const fetchCategory = async () => {
     try {
-      dispatch(setLoadingCategory(true))
+      // Immediate restore from cache so mobile users never wait for categories
+      try {
+        const cached = localStorage.getItem("jp_cached_categories");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            dispatch(setAllCategory(parsed));
+          }
+        } else {
+          dispatch(setLoadingCategory(true));
+        }
+      } catch (e) {
+        dispatch(setLoadingCategory(true));
+      }
+
       const response = await Axios({
         ...summaryApi.getCategory,
-      })
-      // console.log("response: ", response);
-      if (response.data.success) {
-        dispatch(setAllCategory(response.data.data))
-      } else {
-        toast.error(response.data.message)
+      });
+      if (response.data?.success && response.data?.data) {
+        dispatch(setAllCategory(response.data.data));
+        try {
+          localStorage.setItem("jp_cached_categories", JSON.stringify(response.data.data));
+        } catch (e) {
+          console.warn("Failed to cache categories in localStorage:", e);
+        }
       }
     } catch (error) {
-      AxiosToastError(error)
+      console.error("Error fetching categories:", error?.message || error);
     } finally {
-      dispatch(setLoadingCategory(false))
+      dispatch(setLoadingCategory(false));
     }
-  }
+  };
 
   const fetchSubCategory = async () => {
     try {
       const response = await Axios({
         ...summaryApi.getSubCategory,
-      })
-      // console.log("response: ", response);
-      if (response.data.success) {
-        dispatch(setAllSubCategory(response.data.data))
-      } else {
-        toast.error(response.data.message)
+      });
+      if (response.data?.success && response.data?.data) {
+        dispatch(setAllSubCategory(response.data.data));
       }
     } catch (error) {
-      AxiosToastError(error)
+      console.warn("Subcategory fetch error (non-blocking):", error?.message || error);
     }
-  }
+  };
 
   const fetchCartItem = async () => {
     try {

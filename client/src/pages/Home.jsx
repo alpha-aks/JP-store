@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ProductViewByCategory from "../components/ProductViewByCategory";
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
-import { setAllCategory, setAllSubCategory } from "../store/productSlice";
+import { setAllCategory, setAllSubCategory, setLoadingCategory } from "../store/productSlice";
 
 function Home() {
     const dispatch = useDispatch();
@@ -15,28 +15,53 @@ function Home() {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchCategoriesAndSub = async () => {
-            try {
-                if (!allCategory || allCategory.length === 0) {
-                    dispatch(setLoadingCategory(true));
-                }
-                const [catRes, subCatRes] = await Promise.all([
-                    Axios(summaryApi.getCategory),
-                    Axios(summaryApi.getSubCategory)
-                ]);
-                if (catRes.data?.success && catRes.data?.data) {
-                    dispatch(setAllCategory(catRes.data.data));
-                }
-                if (subCatRes.data?.success && subCatRes.data?.data) {
-                    dispatch(setAllSubCategory(subCatRes.data.data));
-                }
-            } catch (err) {
-                console.error("Failed to load categories/subcategories:", err);
-            } finally {
-                dispatch(setLoadingCategory(false));
+    const fetchCategoriesAndSub = async () => {
+        try {
+            if (!allCategory || allCategory.length === 0) {
+                dispatch(setLoadingCategory(true));
             }
-        };
+            const [catResult, subCatResult] = await Promise.allSettled([
+                Axios(summaryApi.getCategory),
+                Axios(summaryApi.getSubCategory)
+            ]);
+
+            if (catResult.status === "fulfilled" && catResult.value?.data?.success && catResult.value?.data?.data) {
+                const catData = catResult.value.data.data;
+                dispatch(setAllCategory(catData));
+                try {
+                    localStorage.setItem("jp_cached_categories", JSON.stringify(catData));
+                } catch (e) {
+                    console.warn("Could not save categories to localStorage:", e);
+                }
+            }
+
+            if (subCatResult.status === "fulfilled" && subCatResult.value?.data?.success && subCatResult.value?.data?.data) {
+                dispatch(setAllSubCategory(subCatResult.value.data.data));
+            }
+        } catch (err) {
+            console.error("Failed to load categories/subcategories:", err);
+        } finally {
+            dispatch(setLoadingCategory(false));
+        }
+    };
+
+    useEffect(() => {
+        // 1. Immediately hydrate from localStorage cache so phone users NEVER see stuck skeletons
+        if (!allCategory || allCategory.length === 0) {
+            try {
+                const cached = localStorage.getItem("jp_cached_categories");
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        dispatch(setAllCategory(parsed));
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to read cached categories:", e);
+            }
+        }
+
+        // 2. Fetch fresh categories from backend
         fetchCategoriesAndSub();
     }, [dispatch]);
 
@@ -101,7 +126,7 @@ function Home() {
                                     <div className="h-4 w-full bg-amber-200/60 rounded"></div>
                                 </div>
                             ))
-                        ) : (
+                        ) : allCategory && allCategory.length > 0 ? (
                             allCategory.map((category, index) => (
                                 <div
                                     key={category._id || index}
@@ -143,6 +168,17 @@ function Home() {
                                     </div>
                                 </div>
                             ))
+                        ) : (
+                            <div className="col-span-full py-6 flex flex-col items-center justify-center gap-2">
+                                <p className="text-xs sm:text-sm text-gray-500">Categories taking a moment to load</p>
+                                <button
+                                    type="button"
+                                    onClick={() => fetchCategoriesAndSub()}
+                                    className="px-4 py-1.5 bg-[#f37023] text-white text-xs font-semibold rounded-full shadow hover:bg-[#e05e10] active:scale-95 transition"
+                                >
+                                    Tap to Reload
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

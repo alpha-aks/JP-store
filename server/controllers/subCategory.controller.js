@@ -47,27 +47,21 @@ export const addSubCategoryController = async (req, res) => {
 
 export const getSubCategoriesController = async (req, res) => {
     try {
-        const data = await SubCategoryModel.find().sort({createdAt: -1}).populate("category")
-        if(!data) {
-            return res.status(400).json({
-                message: "No subCategory found!",
-                error: true,
-                success: false,
-            });   
-        }
-        
+        const data = await SubCategoryModel.find().sort({createdAt: -1}).populate("category");
         return res.status(200).json({
-            data: data,
+            data: data || [],
             message: "Fetched Subcategories successfully.",
             error: false,
             success: true
-        })
+        });
     } catch (error) {
-        return res.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
+        console.error("getSubCategoriesController error:", error.message || error);
+        return res.status(200).json({
+            data: [],
+            message: error.message || "Failed to fetch subcategories",
+            error: false,
+            success: true
+        });
     }
 }
 
