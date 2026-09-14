@@ -15,7 +15,7 @@ Axios.interceptors.request.use(
             if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) {
                 config.baseURL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
             } else if (host.includes("jpenterprise.store") || host.endsWith(".vercel.app")) {
-                config.baseURL = window.location.origin;
+                config.baseURL = "https://backend.jpenterprise.store";
             } else if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) {
                 config.baseURL = `${window.location.protocol}//${host}:8080`;
             } else {

@@ -22,6 +22,7 @@ const allowedOrigins = [
     process.env.CLIENT_URL,
     "https://www.jpenterprise.store",
     "https://jpenterprise.store",
+    "https://backend.jpenterprise.store",
     "http://www.jpenterprise.store",
     "http://jpenterprise.store",
     "http://localhost:5173",

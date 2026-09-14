@@ -7,9 +7,9 @@ export const getBaseURL = () => {
     if (typeof window !== "undefined" && window.location.hostname) {
         const host = window.location.hostname;
 
-        // 2. Production domains: same-origin API (e.g., https://www.jpenterprise.store or Vercel preview)
+        // 2. Production domains: route to dedicated backend at https://backend.jpenterprise.store
         if (host.includes("jpenterprise.store") || host.endsWith(".vercel.app")) {
-            return window.location.origin;
+            return "https://backend.jpenterprise.store";
         }
 
         // 3. Local LAN IP for mobile device testing on local network (e.g., 192.168.x.x)
