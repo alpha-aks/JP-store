@@ -8,17 +8,22 @@ export const getBaseURL = () => {
         const host = window.location.hostname;
 
         // 2. Production domains: route to dedicated backend at https://backend.jpenterprise.store
-        if (host.includes("jpenterprise.store") || host.endsWith(".vercel.app")) {
+        if (host.includes("jpenterprise.store")) {
             return "https://backend.jpenterprise.store";
         }
 
-        // 3. Local LAN IP for mobile device testing on local network (e.g., 192.168.x.x)
+        // 3. Temporary public tunnels (localhost.run, pinggy, localtunnel, ngrok, serveo)
+        if (host.includes("lhr.life") || host.includes("pinggy") || host.includes("loca.lt") || host.includes("ngrok") || host.includes("serveo") || host.includes("trycloudflare")) {
+            return window.location.origin;
+        }
+
+        // 4. Local LAN IP for mobile device testing on local network (e.g., 192.168.x.x)
         if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) {
             return `${window.location.protocol}//${host}:8080`;
         }
     }
 
-    // 4. Default for localhost desktop development
+    // 5. Default for localhost desktop development
     return "http://localhost:8080";
 };
 

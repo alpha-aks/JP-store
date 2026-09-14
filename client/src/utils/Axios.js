@@ -14,8 +14,10 @@ Axios.interceptors.request.use(
             const host = window.location.hostname;
             if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) {
                 config.baseURL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
-            } else if (host.includes("jpenterprise.store") || host.endsWith(".vercel.app")) {
+            } else if (host.includes("jpenterprise.store")) {
                 config.baseURL = "https://backend.jpenterprise.store";
+            } else if (host.includes("lhr.life") || host.includes("pinggy") || host.includes("loca.lt") || host.includes("ngrok") || host.includes("serveo") || host.includes("trycloudflare")) {
+                config.baseURL = window.location.origin;
             } else if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) {
                 config.baseURL = `${window.location.protocol}//${host}:8080`;
             } else {
