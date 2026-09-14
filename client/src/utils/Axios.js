@@ -10,6 +10,10 @@ const Axios = axios.create({
 //sending access token in header
 Axios.interceptors.request.use(
     async (config) => {
+        if (typeof window !== "undefined" && window.location.hostname && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+            config.baseURL = `${window.location.protocol}//${window.location.hostname}:8080`;
+        }
+
         const accessToken = localStorage.getItem("accessToken")
 
         if(accessToken) {

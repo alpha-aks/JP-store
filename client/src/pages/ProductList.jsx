@@ -109,19 +109,27 @@ function ProductList() {
 
     return (
         <section className="w-full mx-auto h-full">
-            {/* Sticky Category Section */}
-            <div className="sticky top-22 hidden lg:flex w-full bg-white z-20 shadow-sm border-b overflow-visible">
-                <div className="w-full max-w-screen-xl mx-auto flex justify-center text-[#666666]">
-                    {allCategory.slice(0, 6).map((category) => {
+            {/* Sticky Category Section - Desktop & Mobile */}
+            <div className="sticky top-28 lg:top-22 w-full bg-white z-20 shadow-sm border-b overflow-x-auto scrollbar-none py-1.5 px-3">
+                <div className="w-full max-w-screen-xl mx-auto flex items-center justify-start lg:justify-center text-[#666666] gap-1.5 sm:gap-2">
+                    {/* On mobile show all categories horizontally, on desktop show first 6 with More dropdown */}
+                    {allCategory.map((category, idx) => {
                         const firstSubCategory = allSubCategory.find(subCategory =>
                             subCategory.category.some(cat => cat._id === category._id)
                         );
+                        const isSelected = categoryId === category._id;
+                        const isHiddenOnDesktop = idx >= 6;
 
                         return (
                             <div
                                 key={category._id}
-                                className={`px-5 py-2 text-md cursor-pointer ${categoryId === category._id && "bg-gray-200"
-                                    }`}
+                                className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap cursor-pointer transition-all shrink-0 ${
+                                    isHiddenOnDesktop ? "lg:hidden" : ""
+                                } ${
+                                    isSelected 
+                                        ? "bg-[#f37023] text-white shadow-sm" 
+                                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                                }`}
                                 onClick={() => {
                                     navigate(`/products-list/${category._id}/${firstSubCategory?._id || ""}`);
                                     scrollToTop();
@@ -132,42 +140,44 @@ function ProductList() {
                         );
                     })}
 
-                    <div className="relative">
-                        <button
-                            className={`px-3 py-2 flex items-center justify-center gap-1 text-md ${isDropdownOpen && "bg-gray-200 hover:bg-gray-300"
-                                } transition duration-200 cursor-pointer`}
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)} // Delay closing
-                        >
-                            More <FaAngleDown />
-                        </button>
+                    {/* Desktop More Dropdown */}
+                    {allCategory.length > 6 && (
+                        <div className="relative hidden lg:block">
+                            <button
+                                className={`px-3 py-1.5 flex items-center justify-center gap-1 text-sm font-semibold rounded-full ${
+                                    isDropdownOpen ? "bg-gray-200" : "bg-gray-100 hover:bg-gray-200"
+                                } text-gray-700 transition duration-200 cursor-pointer`}
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
+                            >
+                                More <FaAngleDown />
+                            </button>
 
-                        {/* Dropdown Menu */}
-                        {isDropdownOpen && (
-                            <div className="absolute top-full right-0 bg-white shadow-lg border w-48 overflow-y-auto h-[70vh]">
-                                {allCategory.slice(6).map((category) => {
-                                    const firstSubCategory = allSubCategory.find(subCategory =>
-                                        subCategory.category.some(cat => cat._id === category._id)
-                                    );
-                                    return (
-                                        <button
-                                            key={category._id}
-                                            className="block px-4 py-2 w-full text-left hover:bg-gray-200"
-                                            onMouseDown={(e) => {
-                                                e.preventDefault();
-                                                navigate(`/products-list/${category._id}/${firstSubCategory?._id || ""}`);
-                                                scrollToTop();
-                                                setIsDropdownOpen(false);
-                                            }}
-                                        >
-                                            {category.name}
-                                        </button>
-                                    )
-                                }
+                            {isDropdownOpen && (
+                                <div className="absolute top-full right-0 bg-white shadow-lg border rounded-xl mt-1 w-48 overflow-y-auto max-h-[60vh] z-30">
+                                    {allCategory.slice(6).map((category) => {
+                                        const firstSubCategory = allSubCategory.find(subCategory =>
+                                            subCategory.category.some(cat => cat._id === category._id)
+                                        );
+                                        return (
+                                            <button
+                                                key={category._id}
+                                                className="block px-4 py-2 w-full text-left text-sm hover:bg-amber-50 hover:text-[#f37023] transition-colors"
+                                                onMouseDown={(e) => {
+                                                    e.preventDefault();
+                                                    navigate(`/products-list/${category._id}/${firstSubCategory?._id || ""}`);
+                                                    scrollToTop();
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                            >
+                                                {category.name}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             )}
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

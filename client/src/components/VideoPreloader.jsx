@@ -15,11 +15,11 @@ export default function VideoPreloader({ onComplete }) {
     }, 700);
   }, [phase, onComplete]);
 
-  // Once GIF is ready/loaded, play full animation (~9.5s) then transition to splash
+  // Auto-transition to splash after 3.5s, or instantly on user tap/click
   useEffect(() => {
     const timer = setTimeout(() => {
       triggerSplash();
-    }, 9500);
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, [triggerSplash]);
@@ -27,6 +27,7 @@ export default function VideoPreloader({ onComplete }) {
   const content = (
     <div 
       onClick={triggerSplash}
+      onTouchStart={triggerSplash}
       className="fixed inset-0 z-[9999999] overflow-hidden select-none cursor-pointer"
       style={{ isolation: "isolate" }}
     >
