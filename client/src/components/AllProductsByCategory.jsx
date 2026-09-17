@@ -59,7 +59,7 @@ function AllProductsByCategory() {
     }, [dispatch]);
 
     return (
-        <section className="lg:px-35 w-full mx-auto mt-3 h-full">
+        <section className="w-full mx-auto h-full">
             {/* Sticky Category Section - Desktop & Mobile */}
             <div className="sticky top-28 lg:top-22 w-full bg-white z-20 shadow-sm border-b overflow-x-auto scrollbar-none py-1.5 px-3">
                 <div className="w-full max-w-screen-xl mx-auto flex items-center justify-start lg:justify-center text-[#666666] gap-1.5 sm:gap-2">
@@ -122,52 +122,45 @@ function AllProductsByCategory() {
                 </div>
             </div>
             
-            {/* Empty Space */}
-            <div className="border border-gray-300 h-17"></div>
-
-            {/* Category name for md and sm screen */}
-            <div className="fixed lg:hidden flex top-30 left-0 w-full bg-white z-10 shadow-md p-2">
-                <span>
-                    {allCategory.find((cat) => cat._id === categoryId)?.name || "Select a Category"}
+            {/* Category header for all screens */}
+            <div className="px-3 py-2.5 sm:py-3 bg-white border-b border-gray-200 flex items-center justify-between">
+                <h1 className="text-sm sm:text-base md:text-lg font-bold text-[#0c286e] flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-[#f37023]">✦</span>
+                    <span>{allCategory.find((cat) => cat._id === categoryId)?.name || "All Products"}</span>
+                </h1>
+                <span className="text-xs text-gray-500 font-medium">
+                    {productData.length} {productData.length === 1 ? 'Product' : 'Products'}
                 </span>
             </div>
 
             {/* Product List */}
             {
                 loading ? (
-                    <div className="flex justify-center items-center">
-                                <span className="animate-spin w-10 h-10 border-4 border-gray-300 border-t-green-500 rounded-full"></span>
-                            </div>
+                    <div className="flex justify-center items-center py-20">
+                        <span className="animate-spin w-10 h-10 border-4 border-gray-300 border-t-[#f37023] rounded-full"></span>
+                    </div>
                 ) : (
-                    <div className="border-1 border-gray-200 bg-[#F2F4FA]">
-                        {loading ? (
-                            <div className="flex justify-center items-center h-screen">
-                                <div className="spinner-border text-primary" role="status">
-                                    <span className="sr-only">Loading...</span>
+                    <div className="border-t border-gray-100 bg-[#F4F6FB] min-h-[60vh]">
+                        <div className="p-2 sm:p-3 md:p-4 max-w-screen-xl mx-auto">
+                            {productData.length > 0 ? (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+                                    {[...productData]
+                                        .sort((a, b) => (a.stock === 0) - (b.stock === 0)) // Moves out-of-stock items to the end
+                                        .map((product) => (
+                                            <div
+                                                key={product._id}
+                                                className="w-full min-w-0"
+                                            >
+                                                <ProductCardForProductListPage data={product} />
+                                            </div>
+                                        ))}
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="p-3">
-                                {productData.length > 0 ? (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                        {[...productData]
-                                            .sort((a, b) => (a.stock === 0) - (b.stock === 0)) // Moves out-of-stock items to the end
-                                            .map((product) => (
-                                                <div
-                                                    key={product._id}
-                                                    className="relative hover:shadow-2xl hover:scale-105 transition duration-200"
-                                                >
-                                                    <ProductCardForProductListPage data={product} />
-                                                </div>
-                                            ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center text-gray-500 text-lg my-10">
-                                        No products available in this category.
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                            ) : (
+                                <div className="text-center text-gray-500 text-sm sm:text-base my-16">
+                                    No products available in this category.
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )
             }

@@ -181,26 +181,18 @@ function ProductList() {
                 </div>
             </div>
 
-            {/* Category name for md and sm screen */}
-            <div className="sticky lg:hidden flex top-28 w-full bg-white z-20 shadow-sm p-2 border-b">
-                <span>
-                    {allCategory.find((category) => category._id === categoryId)?.name ||
-                        "Select a Category"}
-                </span>
-            </div>
-
             {/* Scrollable Content */}
-            <div className="h-screen mt-2 grid grid-cols-[100px_1fr] md:grid-cols-[162px_1fr] lg:grid-cols-[260px_1fr]">
+            <div className="h-screen mt-1 grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] md:grid-cols-[162px_1fr] lg:grid-cols-[240px_1fr]">
                 {/* Left (SubCategory) */}
-                <div className="h-[80vh] overflow-y-auto flex flex-col rounded border border-gray-200 no-scrollbar">
+                <div className="h-[80vh] overflow-y-auto flex flex-col rounded-l border-r border-t border-b border-gray-200 bg-white no-scrollbar">
                     {filteredSubCategories.map((subCategory, index) => (
                         <div
                             key={subCategory._id}
-                            className={`flex flex-col my-3 lg:my-0 lg:flex-row lg:px-4 items-center justify-center ${index === 0 && "lg:mt-4 mt-8"
-                                } ${subCategoryId === subCategory._id
-                                    ? "lg:bg-green-100 lg:border-l-4 border-r-4 border-green-600"
-                                    : "lg:hover:bg-green-100 lg:border lg:border-gray-200"
-                                }`}
+                            className={`flex flex-col py-2.5 px-1 lg:py-3 lg:px-4 items-center justify-center cursor-pointer transition-colors ${
+                                subCategoryId === subCategory._id
+                                    ? "bg-amber-50/70 border-r-4 border-[#f37023] text-[#f37023]"
+                                    : "hover:bg-gray-50 text-gray-600 border-r-4 border-transparent"
+                            }`}
                             onClick={() => {
                                 navigate(`/products-list/${categoryId}/${subCategory._id}`);
                                 scrollToTop();
@@ -209,15 +201,15 @@ function ProductList() {
                             <img
                                 src={subCategory.image}
                                 alt={subCategory.name}
-                                className="w-12 h-12 lg:w-15 lg:h-15 object-scale-down lg:mt-3"
+                                className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain"
                             />
-                            <button
-                                key={subCategory._id}
-                                className={`text-[10px] block lg:px-2 text-center w-full lg:text-left lg:text-sm ${subCategoryId === subCategory._id ? "font-bold" : ""
-                                    }`}
+                            <span
+                                className={`text-[10px] sm:text-xs text-center w-full mt-1 line-clamp-2 leading-tight ${
+                                    subCategoryId === subCategory._id ? "font-bold text-[#f37023]" : "font-medium"
+                                }`}
                             >
                                 {subCategory.name}
-                            </button>
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -225,31 +217,37 @@ function ProductList() {
                 {/* Right (Products By SubCategory) */}
                 {
                     loading ? (
-                        <div className="flex justify-center items-center">
-                                <span className="animate-spin w-10 h-10 border-4 border-gray-300 border-t-green-500 rounded-full"></span>
+                        <div className="flex justify-center items-center h-[80vh] bg-[#F4F6FB]">
+                            <span className="animate-spin w-10 h-10 border-4 border-gray-300 border-t-[#f37023] rounded-full"></span>
                         </div>
                     ) : (
-                        
-                        <div className="pl-2 pb-2 pr-2 overflow-y-scroll h-[80vh] border-r border-gray-200 bg-[#F4F6FB] top-0 no-scrollbar">
-                            <div className="py-4 pl-6 text-md w-full bg-white flex items-center justify-between top-0">
-                                <h2 className="font-bold">
+                        <div className="p-2 sm:p-3 overflow-y-scroll h-[80vh] bg-[#F4F6FB] no-scrollbar">
+                            <div className="py-2 px-3 text-xs sm:text-sm w-full bg-white rounded-lg shadow-2xs flex items-center justify-between mb-2.5 border border-gray-100">
+                                <h2 className="font-bold text-gray-800 truncate">
                                     Buy{" "}
-                                    {filteredSubCategories.find((sub) => sub._id === subCategoryId)?.name ||
-                                        "Products"}{" "}
+                                    <span className="text-[#f37023]">
+                                        {filteredSubCategories.find((sub) => sub._id === subCategoryId)?.name || "Products"}
+                                    </span>{" "}
                                     online
                                 </h2>
+                                <span className="text-[11px] text-gray-500 font-medium shrink-0 ml-2">
+                                    {products.length} {products.length === 1 ? 'item' : 'items'}
+                                </span>
                             </div>
                             {products.length === 0 ? (
-                                <div className="flex flex-col justify-center items-center">
-                                    <img src={nothing_here_yet} alt="No products available" className="w-80 h-80" />
-                                    <p className="text-2xl text-[#F8CB46] font-bold">No Product Found</p>
+                                <div className="flex flex-col justify-center items-center py-16 text-center">
+                                    <img src={nothing_here_yet} alt="No products available" className="w-48 h-48 object-contain" />
+                                    <p className="text-lg font-bold text-gray-600 mt-2">No Products in this Category</p>
+                                    <p className="text-xs text-gray-400">Please check other categories or subcategories.</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-auto container py-4">
+                                <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-2.5">
                                     {products
                                         .sort((a, b) => (a.stock === 0) - (b.stock === 0))
                                         .map((product, index) => (
-                                            <ProductCardForProductListPage data={product} key={index} />
+                                            <div key={product._id || index} className="w-full min-w-0">
+                                                <ProductCardForProductListPage data={product} />
+                                            </div>
                                         ))}
                                 </div>
                             )}

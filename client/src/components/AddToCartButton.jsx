@@ -73,34 +73,36 @@ function AddToCartButton({ data }) {
     return (
         <>
             {isItemAvailableInCart ? (
-                <div className={`w-full flex items-center font-bold text-md text-white 
+                <div className={`flex items-center font-bold text-xs sm:text-sm text-white 
                     ${data?.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-[#f37023]"} 
-                    rounded-lg shadow-sm`}>
+                    rounded-md sm:rounded-lg shadow-xs overflow-hidden shrink-0`}>
                     <button
-                        className="px-1 py-2 w-1/3 text-center cursor-pointer hover:bg-black/10 rounded-l-lg transition-colors"
+                        className="px-1.5 py-0.5 sm:py-1 text-center cursor-pointer hover:bg-black/10 active:bg-black/20 transition-colors flex items-center justify-center"
                         onClick={(e) => decreaseQty(e)}
                         disabled={data?.stock === 0}
+                        aria-label="Decrease quantity"
                     >
-                        <Minus size={16} />
+                        <Minus size={13} />
                     </button>
-                    <span className="p-1 w-1/3 text-center text-md">
+                    <span className="px-1 text-center text-xs sm:text-sm min-w-[18px]">
                         {cartItemDetails?.quantity}
                     </span>
                     <button
-                        className="p-1 w-1/3 text-center cursor-pointer hover:bg-black/10 rounded-r-lg transition-colors"
+                        className="px-1.5 py-0.5 sm:py-1 text-center cursor-pointer hover:bg-black/10 active:bg-black/20 transition-colors flex items-center justify-center"
                         onClick={(e) => increaseQuantity(e)}
                         disabled={data?.stock === 0}
+                        aria-label="Increase quantity"
                     >
-                        <Plus size={16} />
+                        <Plus size={13} />
                     </button>
                 </div>
             ) : (
-                <div className="rounded">
+                <div className="shrink-0">
                     <button
-                        className={`px-4 py-1 border-2 rounded-lg font-semibold transition-all duration-200 
+                        className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 border sm:border-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 
                             ${data?.stock === 0 
-                            ? "border-gray-400 text-gray-400 cursor-not-allowed" 
-                            : "text-[#f37023] border-[#f37023] hover:bg-[#f37023] hover:text-white cursor-pointer shadow-sm"}`}
+                            ? "border-gray-300 text-gray-400 cursor-not-allowed bg-gray-100" 
+                            : "text-[#f37023] border-[#f37023] hover:bg-[#f37023] hover:text-white active:scale-95 cursor-pointer shadow-xs"}`}
                         onClick={(e) => handleAddToCart(e)}
                         disabled={data?.stock === 0}
                     >

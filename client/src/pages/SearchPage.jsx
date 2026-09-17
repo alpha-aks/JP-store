@@ -87,12 +87,12 @@ function SearchPage() {
     if (!searchQuery) return null; // Hide everything if search is empty
 
     return (
-        <section className="px-4 lg:px-6 w-full mx-auto mt-3 h-full">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-3">
+        <section className="px-2 sm:px-4 lg:px-6 w-full max-w-screen-xl mx-auto mt-2 sm:mt-3 h-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 p-1 sm:p-3">
                 {data.map((product) => (
                     <div
                         key={product._id}
-                        className="relative hover:shadow-2xl hover:scale-105 transition duration-200"
+                        className="w-full min-w-0"
                     >
                         <ProductCardForProductListPage data={product} />
                     </div>
