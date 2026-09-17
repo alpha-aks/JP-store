@@ -30,6 +30,11 @@ import OrderDetails from "../pages/OrderDetails"
 import AddNewAddressManually from "../components/AddNewAddressManually"
 import EditAddressManually from "../components/EditAddressManually"
 import AdminPortal from "../pages/AdminPortal"
+import PrivacyPolicy from "../pages/PrivacyPolicy"
+import TermsAndConditions from "../pages/TermsAndConditions"
+import RefundPolicy from "../pages/RefundPolicy"
+import ShippingPolicy from "../pages/ShippingPolicy"
+import ContactUs from "../pages/ContactUs"
 
 const router = createBrowserRouter([
     {
@@ -160,6 +165,26 @@ const router = createBrowserRouter([
             {
                 path: "cancel",
                 element: <Cancel />
+            },
+            {
+                path: "privacy-policy",
+                element: <PrivacyPolicy />
+            },
+            {
+                path: "terms-and-conditions",
+                element: <TermsAndConditions />
+            },
+            {
+                path: "refund-policy",
+                element: <RefundPolicy />
+            },
+            {
+                path: "shipping-policy",
+                element: <ShippingPolicy />
+            },
+            {
+                path: "contact-us",
+                element: <ContactUs />
             },
         ]
     }

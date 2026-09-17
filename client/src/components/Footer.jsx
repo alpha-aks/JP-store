@@ -171,10 +171,60 @@ function Footer() {
                             </li>
                             <li>
                                 <span
-                                    onClick={() => navigate("/dashboard/addresses")}
+                                    onClick={() => navigate("/contact-us")}
                                     className="hover:text-[#fbbf24] cursor-pointer transition-colors"
                                 >
-                                    Saved Addresses
+                                    Contact Support
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Policies & Legal (2 cols) */}
+                    <div className="lg:col-span-2 space-y-3">
+                        <h4 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
+                            <span className="w-2 h-2 rounded-full bg-[#f37023]"></span>
+                            Policies &amp; Legal
+                        </h4>
+                        <ul className="space-y-2.5 text-xs text-gray-300">
+                            <li>
+                                <span
+                                    onClick={() => navigate("/refund-policy")}
+                                    className="hover:text-[#fbbf24] cursor-pointer transition-colors"
+                                >
+                                    Refund &amp; Return Policy
+                                </span>
+                            </li>
+                            <li>
+                                <span
+                                    onClick={() => navigate("/terms-and-conditions")}
+                                    className="hover:text-[#fbbf24] cursor-pointer transition-colors"
+                                >
+                                    Terms &amp; Conditions
+                                </span>
+                            </li>
+                            <li>
+                                <span
+                                    onClick={() => navigate("/privacy-policy")}
+                                    className="hover:text-[#fbbf24] cursor-pointer transition-colors"
+                                >
+                                    Privacy Policy
+                                </span>
+                            </li>
+                            <li>
+                                <span
+                                    onClick={() => navigate("/shipping-policy")}
+                                    className="hover:text-[#fbbf24] cursor-pointer transition-colors"
+                                >
+                                    Shipping Policy
+                                </span>
+                            </li>
+                            <li>
+                                <span
+                                    onClick={() => navigate("/contact-us")}
+                                    className="hover:text-[#fbbf24] cursor-pointer transition-colors"
+                                >
+                                    Grievance Officer
                                 </span>
                             </li>
                         </ul>
@@ -218,14 +268,16 @@ function Footer() {
 
             {/* Bottom Copyright Bar */}
             <div className="w-full border-t border-white/10 bg-black/30 py-5 pb-24 lg:pb-5">
-                <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-3">
-                    <p>© {new Date().getFullYear()} JP Store. All rights reserved. Crafted with pride for Gundala.</p>
-                    <div className="flex items-center gap-4 text-xs text-gray-400">
-                        <span className="text-amber-200/90 font-medium">Safe & Secure Ordering</span>
+                <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-400 gap-3">
+                    <p>© {new Date().getFullYear()} JP Store (JP Enterprise). All rights reserved.</p>
+                    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[11px] sm:text-xs text-gray-400">
+                        <span onClick={() => navigate("/privacy-policy")} className="hover:text-amber-300 cursor-pointer transition-colors">Privacy Policy</span>
                         <span>•</span>
-                        <span>Razorpay Trusted</span>
+                        <span onClick={() => navigate("/terms-and-conditions")} className="hover:text-amber-300 cursor-pointer transition-colors">Terms of Service</span>
                         <span>•</span>
-                        <span>Instant Refund Guarantee</span>
+                        <span onClick={() => navigate("/refund-policy")} className="hover:text-amber-300 cursor-pointer transition-colors">Refund &amp; Return Policy</span>
+                        <span>•</span>
+                        <span onClick={() => navigate("/shipping-policy")} className="hover:text-amber-300 cursor-pointer transition-colors">Shipping Policy</span>
                     </div>
                 </div>
             </div>
