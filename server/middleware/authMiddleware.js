@@ -7,7 +7,7 @@ const authMiddleware = async (req, res, next) => {
         
         if(!token) {
             return res.status(401).json({
-                message: "You are not logged in. Please log in to continue.",
+                message: "You need to login before adding product to cart or continuing.",
                 error: true, 
                 success: false
             })
@@ -16,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
         // console.log("Decode: ", decode);
         if(!decode) {
             return res.status(401).json({
-                message: "Unauthorized access!!!",
+                message: "You need to login before adding product to cart or continuing.",
                 error: true,
                 success: false
             })
@@ -28,8 +28,11 @@ const authMiddleware = async (req, res, next) => {
         next()
 
     } catch (error) {
+        const isExpired = error?.name === "TokenExpiredError" || error?.message?.includes("expired");
         return res.status(401).json({
-            message: error.message || "You are not logged in. Please log in to continue.",
+            message: isExpired 
+                ? "Your session has expired. Please log in again to continue." 
+                : "You need to login before adding product to cart or continuing.",
             error: true,
             success: false
         })

@@ -10,8 +10,8 @@ import { Minus, Plus } from "lucide-react";
 function AddToCartButton({ data }) {
 
     const { fetchCartItem, updateCartItem, deleteCartItem } = userCart();
-    const cartItem = useSelector(state => state.cartItem.cart)
-    // console.log(cartItem);
+    const cartItem = useSelector(state => state.cartItem.cart);
+    const user = useSelector(state => state?.user);
 
     const [isItemAvailableInCart, setIsItemAvailableInCart] = useState(false)
     const [qty, setQty] = useState(0)
@@ -31,6 +31,16 @@ function AddToCartButton({ data }) {
         e.preventDefault()
         e.stopPropagation()
 
+        // Friendly login check: Inform user cleanly without technical error terms
+        if (!user?._id) {
+            toast.error("You need to login before adding product to cart", {
+                icon: "🔒",
+                id: "auth-login-cart-toast",
+                duration: 3500
+            });
+            return;
+        }
+
         try {
             const resposnse = await Axios({
                 ...summaryApi.addToCart,
@@ -38,7 +48,6 @@ function AddToCartButton({ data }) {
                     productId: data?._id,
                 },
             })
-            // console.log("resposnse: ", resposnse);
 
             if (resposnse.data.success) {
                 toast.success(resposnse.data.message)
@@ -56,7 +65,6 @@ function AddToCartButton({ data }) {
         e.stopPropagation()
 
         updateCartItem(cartItemDetails?._id, cartItemDetails?.quantity + 1);
-        // fetchCartItem()
     }
 
     const decreaseQty = async(e) => {
@@ -64,7 +72,6 @@ function AddToCartButton({ data }) {
         e.stopPropagation()
         if(qty === 1){
             deleteCartItem(cartItemDetails?._id)
-            // fetchCartItem()
         }else{
             await updateCartItem(cartItemDetails?._id,qty-1)
         }
@@ -74,21 +81,21 @@ function AddToCartButton({ data }) {
         <>
             {isItemAvailableInCart ? (
                 <div className={`flex items-center font-bold text-xs sm:text-sm text-white 
-                    ${data?.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-[#f37023]"} 
-                    rounded-md sm:rounded-lg shadow-xs overflow-hidden shrink-0`}>
+                    ${data?.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-[#f37023] via-[#ff7324] to-[#f37023] shadow-xs hover:shadow-sm"} 
+                    rounded-md sm:rounded-lg overflow-hidden shrink-0 border border-orange-400/40 transition-all`}>
                     <button
-                        className="px-1.5 py-0.5 sm:py-1 text-center cursor-pointer hover:bg-black/10 active:bg-black/20 transition-colors flex items-center justify-center"
+                        className="px-1.5 py-0.5 sm:py-1 text-center cursor-pointer hover:bg-black/15 active:bg-black/25 transition-colors flex items-center justify-center"
                         onClick={(e) => decreaseQty(e)}
                         disabled={data?.stock === 0}
                         aria-label="Decrease quantity"
                     >
                         <Minus size={13} />
                     </button>
-                    <span className="px-1 text-center text-xs sm:text-sm min-w-[18px]">
+                    <span className="px-1.5 text-center text-xs sm:text-sm min-w-[20px] font-extrabold tracking-tight">
                         {cartItemDetails?.quantity}
                     </span>
                     <button
-                        className="px-1.5 py-0.5 sm:py-1 text-center cursor-pointer hover:bg-black/10 active:bg-black/20 transition-colors flex items-center justify-center"
+                        className="px-1.5 py-0.5 sm:py-1 text-center cursor-pointer hover:bg-black/15 active:bg-black/25 transition-colors flex items-center justify-center"
                         onClick={(e) => increaseQuantity(e)}
                         disabled={data?.stock === 0}
                         aria-label="Increase quantity"
@@ -99,10 +106,10 @@ function AddToCartButton({ data }) {
             ) : (
                 <div className="shrink-0">
                     <button
-                        className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 border sm:border-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 
+                        className={`px-3 sm:px-4 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 
                             ${data?.stock === 0 
-                            ? "border-gray-300 text-gray-400 cursor-not-allowed bg-gray-100" 
-                            : "text-[#f37023] border-[#f37023] hover:bg-[#f37023] hover:text-white active:scale-95 cursor-pointer shadow-xs"}`}
+                            ? "border border-gray-300 text-gray-400 cursor-not-allowed bg-gray-100" 
+                            : "text-[#f37023] bg-orange-50/80 border border-[#f37023]/80 hover:bg-gradient-to-r hover:from-[#f37023] hover:to-[#ff833b] hover:text-white hover:border-[#f37023] active:scale-95 cursor-pointer shadow-2xs hover:shadow-xs"}`}
                         onClick={(e) => handleAddToCart(e)}
                         disabled={data?.stock === 0}
                     >
