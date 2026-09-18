@@ -13,6 +13,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import AddToCartButton from "../components/AddToCartButton";
+import { ensureHttps } from "../utils/imageUrl";
 
 function ProductDetails() {
 
@@ -67,7 +68,9 @@ function ProductDetails() {
 
             if (response.data.success) {
                 setProductData(response.data.data);
-                setImages(response.data.data.image);
+                const rawImgs = response.data.data.image || [];
+                const safeImgs = Array.isArray(rawImgs) ? rawImgs.map(img => ensureHttps(img)) : [ensureHttps(rawImgs)];
+                setImages(safeImgs);
             }
         } catch (error) {
             AxiosToastError(error);
@@ -84,7 +87,7 @@ function ProductDetails() {
     // Set selectedImage once images array is updated
     useEffect(() => {
         if (images.length > 0) {
-            setSelectedImage(images[0]);
+            setSelectedImage(ensureHttps(images[0]));
         }
     }, [images]);
 

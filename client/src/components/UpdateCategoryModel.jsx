@@ -33,10 +33,11 @@ function UpdateCategoryModel({ close, category, fetchCategory }) {
         setLoading(true); // Start loading
         try {
             const response = await uploadImage(file, "category");
-            if (response?.data?.data?.url) {
+            const rawUrl = response?.data?.data?.secure_url || response?.data?.data?.url || "";
+            if (rawUrl) {
                 setData((prev) => ({
                     ...prev,
-                    image: response.data.data.url,
+                    image: rawUrl.replace(/^http:\/\//i, "https://"),
                 }));
             }
         } catch (error) {

@@ -106,10 +106,13 @@ function UpdateProduct() {
     
             for (const file of files) {
                 const response = await uploadImage(file, "product");
-                if (response?.data?.data?.url) {
-                    const imageURL = response.data.data.url;
-                    uploadedImages.push(imageURL);
-                    uploadedCount++;
+                if (response?.data?.data) {
+                    const rawUrl = response.data.data.secure_url || response.data.data.url || "";
+                    const imageURL = rawUrl.replace(/^http:\/\//i, "https://");
+                    if (imageURL) {
+                        uploadedImages.push(imageURL);
+                        uploadedCount++;
+                    }
 
                     // Update progress after each upload
                     setCurrentlyUploadedImages(uploadedCount);

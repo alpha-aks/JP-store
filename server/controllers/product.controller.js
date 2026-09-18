@@ -1,5 +1,14 @@
 import ProductModel from "../models/product.model.js"
 
+export const sanitizeProduct = (prod) => {
+    if (!prod) return prod;
+    const doc = prod.toObject ? prod.toObject() : { ...prod };
+    if (Array.isArray(doc.image)) {
+        doc.image = doc.image.map(url => typeof url === "string" ? url.replace(/^http:\/\//i, "https://") : url);
+    }
+    return doc;
+};
+
 export const addProductController = async (req, res) => {
     try {
         
@@ -62,10 +71,12 @@ export const addProductController = async (req, res) => {
             });
         }
 
+        const secureImages = (image || []).map(url => typeof url === "string" ? url.replace(/^http:\/\//i, "https://") : url);
+
         //Create New Product
         const newProduct = new ProductModel({
             name,
-            image,
+            image: secureImages,
             category,
             subCategory,
             unit,
@@ -83,7 +94,7 @@ export const addProductController = async (req, res) => {
             message: "Product added successfully",
             error: false,
             success: true,
-            data: saveProduct,
+            data: sanitizeProduct(saveProduct),
         })
 
     } catch (error) {
@@ -134,7 +145,7 @@ export const getProductsController = async (req, res) => {
             success : true,
             totalCount : totalCount,
             totalNoPage : Math.ceil( totalCount / limit),
-            data
+            data: (data || []).map(sanitizeProduct)
         })
     } catch (error) {
         return res.status(500).json({
@@ -159,6 +170,10 @@ export const updateProductController = async (req, res) => {
             });
         }
         
+        if (data.image && Array.isArray(data.image)) {
+            data.image = data.image.map(url => typeof url === "string" ? url.replace(/^http:\/\//i, "https://") : url);
+        }
+        
         const updatedProduct = await ProductModel.findByIdAndUpdate(id, data, {new: true});
 
         if (!updatedProduct) {
@@ -173,7 +188,7 @@ export const updateProductController = async (req, res) => {
             message: "Product updated successfully",
             error: false,
             success: true,
-            data: updatedProduct,
+            data: sanitizeProduct(updatedProduct),
         });
 
     } catch (error) {
@@ -235,7 +250,7 @@ export const getProductsByCategoryController = async (req, res) => {
             message: "Products fetched successfully",
             error: false,
             success: true,
-            data: products
+            data: (products || []).map(sanitizeProduct)
         });
 
     } catch (error) {
@@ -270,7 +285,7 @@ export const getProductByCategoryAndSubCategory  = async(request,response)=>{
 
         return response.json({
             message : "Product list",
-            data : data,
+            data : (data || []).map(sanitizeProduct),
             success : true,
             error : false
         })
@@ -310,7 +325,7 @@ export const getProductByProductId = async (req, res) => {
             message: "Product fetched successfully.",
             error: false,
             success: true,
-            data: product
+            data: sanitizeProduct(product)
         })
 
     } catch (error) {
@@ -350,7 +365,7 @@ export const searchProductController = async (req, res) => {
             message: "Products fetched successfully.",
             error: false,
             success: true,
-            data: products,
+            data: (products || []).map(sanitizeProduct),
             total, // Send total products count
         });
 

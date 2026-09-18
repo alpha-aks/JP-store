@@ -8,6 +8,7 @@ import summaryApi from "../common/summaryApi";
 import { setAllCategory, setAllSubCategory } from "../store/productSlice";
 import ProductCardForProductListPage from "../components/ProductCardForProductListPage";
 import nothing_here_yet from "../assets/nothing_here_yet.webp";
+import { ensureHttps } from "../utils/imageUrl";
 
 function ProductList() {
     const navigate = useNavigate();
@@ -199,9 +200,13 @@ function ProductList() {
                             }}
                         >
                             <img
-                                src={subCategory.image}
+                                src={ensureHttps(subCategory.image)}
                                 alt={subCategory.name}
                                 className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain"
+                                onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/favicon.png";
+                                }}
                             />
                             <span
                                 className={`text-[10px] sm:text-xs text-center w-full mt-1 line-clamp-2 leading-tight ${

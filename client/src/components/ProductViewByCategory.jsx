@@ -12,26 +12,54 @@ function ProductViewByCategory({ id, name }) {
 
     // console.log(id);
 
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(() => {
+        if (!id) return [];
+        try {
+            const cached = localStorage.getItem(`jp_cached_products_${id}`);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    return parsed;
+                }
+            }
+        } catch (e) {
+            console.warn("Error reading cached products:", e);
+        }
+        return [];
+    });
     const [loading, setLoading] = useState(false);
 
     const containerRef = useRef(null); // Reference for scrolling container
 
     const loadingCardNumber = new Array(5).fill(null);
 
-    const fetchProductsByCategory = async () => {
+    const fetchProductsByCategory = async (retryCount = 0) => {
         try {
-            setLoading(true);
+            // Only show loading spinner/skeleton if we don't already have cached data
+            if (!data || data.length === 0) {
+                setLoading(true);
+            }
             const response = await Axios({
                 ...summaryApi.getProductByCategory,
                 data: {
                     id,
                 },
             });
-            // console.log(response.data);
-            setData(response.data?.data || []);
+            const products = response.data?.data || [];
+            setData(products);
+            try {
+                localStorage.setItem(`jp_cached_products_${id}`, JSON.stringify(products));
+            } catch (e) {
+                console.warn("Could not cache products to localStorage:", e);
+            }
         } catch (error) {
             console.error("Error fetching category products:", error);
+            // Standalone PWA / WebAPK retry mechanism
+            if (retryCount < 2) {
+                setTimeout(() => {
+                    fetchProductsByCategory(retryCount + 1);
+                }, 1500);
+            }
         } finally {
             setLoading(false);
         }

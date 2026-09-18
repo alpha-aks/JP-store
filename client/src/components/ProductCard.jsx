@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 import { validURLConvertor } from "../utils/validURLConvertor";
 import disscountBannerSVG from "../assets/disscountBanner.svg";
 import AddToCartButton from "./AddToCartButton";
+import { ensureHttps } from "../utils/imageUrl";
 
 function ProductCard({data}) {
 
     const formattedUnit = /^\d+$/.test(data?.unit) ? `${data.unit} Unit` : data.unit;
-    const url = `products-list/${validURLConvertor(data.name)}-${data._id}`;
+    const url = `/products-list/${validURLConvertor(data?.name || "product")}-${data?._id}`;
+    const productImg = ensureHttps(data?.image?.[0]);
 
     return (
         <Link 
@@ -29,10 +31,14 @@ function ProductCard({data}) {
 
             <div className='h-24 sm:h-28 md:h-32 lg:h-36 w-full rounded-lg overflow-hidden flex items-center justify-center bg-gray-50/50 relative'>
                 <img 
-                    src={data.image[0]} 
+                    src={productImg} 
                     alt={data.name}
                     className="w-full h-full object-contain p-1.5 transition-transform duration-200 hover:scale-105"
                     loading="lazy"
+                    onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/favicon.png";
+                    }}
                 />
             </div>
 

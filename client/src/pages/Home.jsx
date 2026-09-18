@@ -6,6 +6,7 @@ import ProductViewByCategory from "../components/ProductViewByCategory";
 import Axios from "../utils/Axios";
 import summaryApi from "../common/summaryApi";
 import { setAllCategory, setAllSubCategory, setLoadingCategory } from "../store/productSlice";
+import { ensureHttps } from "../utils/imageUrl";
 
 function Home() {
     const dispatch = useDispatch();
@@ -152,10 +153,14 @@ function Home() {
                                             {/* Soft radial glow in alcove */}
                                             <div className="absolute inset-1 rounded-full bg-gradient-to-b from-amber-100/50 via-orange-50/20 to-transparent scale-90 group-hover:scale-110 transition-transform duration-300"></div>
                                             <img
-                                                src={category.image}
+                                                src={ensureHttps(category.image)}
                                                 alt={category.name || `Category ${index}`}
                                                 className="relative z-10 w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 lg:w-22 lg:h-22 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_3px_5px_rgba(0,0,0,0.08)]"
                                                 loading="lazy"
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = "/favicon.png";
+                                                }}
                                             />
                                         </div>
 
