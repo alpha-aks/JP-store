@@ -18,7 +18,7 @@ const sendEmail = async ({ sendTo, subject, html }) => {
     try {
         console.log(`\n📧 [EMAIL DISPATCH] To: ${sendTo} | Subject: ${subject}`);
         
-        const fromAddress = process.env.RESEND_FROM_EMAIL || 'Jp Store <no-reply@nishant.one>';
+        const fromAddress = process.env.RESEND_FROM_EMAIL || 'JP Store <no-reply@jpenterprise.store>';
 
         const { data, error } = await resend.emails.send({
             from: fromAddress,

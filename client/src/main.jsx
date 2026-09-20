@@ -12,9 +12,7 @@ createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <AddressProvider>
       <CartProvider>
-        <RouterProvider router={router}>
-          <App />
-        </RouterProvider>
+        <RouterProvider router={router} />
       </CartProvider>
     </AddressProvider>
   </Provider>
